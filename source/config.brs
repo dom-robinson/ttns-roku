@@ -1,7 +1,7 @@
 ' Public endpoints only. This channel does not need API keys or logins.
 
 function AppVersion() as String
-    return "0.2.0-beta"
+    return "0.2.2-beta"
 end function
 
 function NowPlayingUrl() as String

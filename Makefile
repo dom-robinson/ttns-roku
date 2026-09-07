@@ -7,11 +7,12 @@ export
 ROKU_DEV_TARGET ?=
 ROKU_DEV_PASSWORD ?=
 ROKU_SIGN_PASSWORD ?=
+PYTHON ?= python3
 
-.PHONY: images zip sideload package smoke clean
+.PHONY: images zip sideload package smoke screenshots deeplink clean
 
 images:
-	python3 scripts/make_images.py
+	$(PYTHON) scripts/make_images.py
 
 zip: images
 	mkdir -p out
@@ -37,6 +38,15 @@ package: zip
 
 smoke:
 	python3 scripts/smoke_apis.py
+
+screenshots:
+	@test -n "$(ROKU_DEV_TARGET)" || (echo "Set ROKU_DEV_TARGET to your Roku IP"; exit 1)
+	@test -n "$(ROKU_DEV_PASSWORD)" || (echo "Set ROKU_DEV_PASSWORD to the device developer password"; exit 1)
+	python3 scripts/capture_store_screens.py
+
+deeplink:
+	@test -n "$(ROKU_DEV_TARGET)" || (echo "Set ROKU_DEV_TARGET to your Roku IP"; exit 1)
+	curl -d '' "http://$(ROKU_DEV_TARGET):8060/launch/dev?contentId=brighton&mediaType=live"
 
 clean:
 	rm -rf out

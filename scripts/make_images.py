@@ -177,10 +177,11 @@ def main() -> None:
     splash((1920, 1080), IMAGES / "splash-screen_fhd.jpg")
     splash((1280, 720), IMAGES / "splash-screen_hd.jpg")
     splash((720, 480), IMAGES / "splash-screen_sd.jpg")
-    # Home-row slot is ~4:3. The old 336x210 / 246x140 docs squash a circle.
+    # Store / home-row sizes from the current manifest checker.
+    # Inscribe the circle in the short side so a wide SD tile stays round.
     poster((540, 405), IMAGES / "channel-poster_fhd.png")
     poster((290, 218), IMAGES / "channel-poster_hd.png")
-    poster((214, 144), IMAGES / "channel-poster_sd.png")
+    poster((246, 140), IMAGES / "channel-poster_sd.png")
     fallback(IMAGES / "artwork-fallback.png")
     spinner(IMAGES / "spinner.png")
     print(f"wrote images in {IMAGES}")

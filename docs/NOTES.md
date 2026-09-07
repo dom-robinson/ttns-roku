@@ -1,6 +1,6 @@
 # TTNS Roku — notes
 
-Working notes for the `v0.2.0-beta` sideload. Living-room dogfood on Roku OS 15. Not a public Streaming Store listing — see [STORE.md](STORE.md) for that path.
+Working notes for the `v0.2.2-beta` build. Living-room dogfood on Roku OS 15. Public Streaming Store listing has been submitted; see [STORE.md](STORE.md).
 
 ## Product intent
 
@@ -71,7 +71,7 @@ Same focus model as chat: **ListScreen owns all keys**. `m.grid.focusable = fals
 
 - Source mark: `images/ttns-logo-source.jpg` (red circle; JPEG has no alpha).
 - `scripts/make_images.py` punches the black to transparency, writes a square `images/ttns-logo.png`, and rebuilds splash / channel posters / spinner.
-- Channel posters must be **540×405, 290×218, 214×144**. The older 336×210 / 246×140 docs squash a circle into an oval on the home row.
+- Channel posters must be **540×405, 290×218, 246×140** (the sizes Static Analysis checks). Inscribe the circle in the short side so a wide SD tile stays round.
 - Inscribe the circle in the short side on `#0a0a0a`. Letterboxing is required so the ring stays round. Never scale the mark itself to fill a wide tile.
 
 ## BrightScript / SceneGraph (OS 15)
@@ -94,6 +94,24 @@ Hard rules learned the painful way. Breaking these crashes the channel or silent
 14. BrightScript `Instr` returns **0** when not found. Use `Instr(...) > 0`.
 15. Do not set `m.top.focusable` via XML on the component root.
 
+## Deep links and launch beacon
+
+Cold launch reads `contentId` / `mediaType` from `Main()` args. While the app is already running, `roInput` on the main message port sets `MainScene.inputTick`. Helpers live in `source/deeplink.brs`.
+
+| contentId | Behaviour |
+|---|---|
+| `brighton`, `ttns-brighton` | Play Brighton |
+| `national`, `ttns`, `thursday` | Play The Thursday Night Show |
+| `listen`, `live`, `radio` | Play the last selected live station |
+| `gigs`, `events`, `schedule` | Open the gigs grid |
+| `community`, `listings` | Open the community grid |
+| `promote`, `plans` | Open Promote |
+| anything else, including `bristol` | Home |
+
+`AppLaunchComplete` fires **once** per process: after Home (or a browse deep link) is up, or after a playable deep link reaches buffering/playing. A 12 second watchdog fires it anyway so a slow stream cannot fail certification. Do not signal it again for `roInput` deep links.
+
+Local tests: `make deeplink`, or `curl -d '' "http://<roku-ip>:8060/input?contentId=gigs&mediaType=tvSpecial"`.
+
 ## Beta known limits
 
 - Not in the public Streaming Store. Sideload, or a 20-user Dashboard beta.
@@ -102,7 +120,8 @@ Hard rules learned the painful way. Breaking these crashes the channel or silent
 - Chat is read-only. No posting from the TV.
 - Gig / community load time is bound to sequential HTTP. Spinner is the honest UX.
 - Channel home-row icon is a landscape tile. The logo inside is circular; the tile itself cannot be.
-- Public store certification will want deep-link handling and an `AppLaunchComplete` beacon. Neither is finished. See [STORE.md](STORE.md).
+
+Public store listing still needs a signed `.pkg`, Dashboard copy, privacy/terms URLs, and the six screenshots from `make screenshots`. See [STORE.md](STORE.md).
 
 ## Living-room test box
 

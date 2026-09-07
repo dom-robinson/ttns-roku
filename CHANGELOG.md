@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.2.2-beta — 2026-09-07
+
+Package submitted for a public Streaming Store listing (Roku review pending). Minimum firmware **15.1**.
+
+- `rsg_version=1.3`. Dashboard **Minimum firmware must be 15.1** (not 9.2).
+- Dropped deprecated manifest `subtitle`.
+- SD channel poster is 246×140 again, which is what the analyser checks.
+- `roAppMemoryMonitor` plus the legacy `EnableLowGeneralMemoryEvent` fallback. Roku turns those memory warnings into errors on 1 October 2026.
+
+## v0.2.1-beta — 2026-09-07
+
+Store-readiness on top of the living-room beta.
+
+- `AppLaunchComplete` fires once when Home is usable, or when a playable deep link is buffering/playing (12s watchdog). Runtime deep links do not fire it again.
+- Deep links: cold launch args plus `roInput` while running. `brighton` / `national` / `listen` play live; `gigs`, `community`, and `promote` open those screens; anything else lands on Home.
+- `make screenshots` captures the six 1920×1080 Channel Store frames from the sideloaded box. `make deeplink` launches Brighton live over ECP.
+
 ## v0.2.0-beta — 2026-09-07
 
 Living-room beta. Sideload, or share through a Roku Dashboard beta. Still not a public Streaming Store listing.

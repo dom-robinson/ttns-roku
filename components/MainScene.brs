@@ -22,8 +22,21 @@ sub init()
     m.hint.observeField("visible", "onHintVisible")
     m.listItems = []
     m.detailWebUrl = NationalSiteUrl()
+    m.launchComplete = false
+    m.pendingLaunchPlay = false
 
-    m.home.callFunc("takeFocus")
+    m.homeReadyTimer = m.top.findNode("homeReadyTimer")
+    m.launchWatchdog = m.top.findNode("launchWatchdog")
+    m.homeReadyTimer.observeField("fire", "onHomeReady")
+    m.launchWatchdog.observeField("fire", "onLaunchWatchdog")
+
+    contentId = ""
+    mediaType = ""
+    if m.global <> invalid
+        contentId = TrimText(m.global.launchContentId)
+        mediaType = TrimText(m.global.launchMediaType)
+    end if
+    applyDeepLink(contentId, mediaType, true)
 end sub
 
 sub hideAll()
@@ -320,4 +333,56 @@ sub onPlayerState()
     else if m.wantPlay = false
         m.playerUi.statusLine = "Paused"
     end if
+    if m.pendingLaunchPlay = true
+        if playing = true or state = "error"
+            fireLaunchComplete()
+        end if
+    end if
+end sub
+
+sub applyDeepLink(contentId as String, mediaType as String, isColdLaunch as Boolean)
+    action = DeepLinkAction(contentId, mediaType)
+    if action = "play"
+        stationId = StationIdForDeepLink(contentId)
+        WriteStationId(stationId)
+        m.global.selectedStationId = stationId
+        applyStationToPlayer(true)
+        showPlayer()
+        if isColdLaunch = true
+            m.pendingLaunchPlay = true
+            m.launchWatchdog.control = "start"
+        end if
+        return
+    end if
+    if action = "gigs"
+        openList("gigs")
+    else if action = "community"
+        openList("community")
+    else if action = "promote"
+        showPlans()
+    else
+        showHome()
+    end if
+    if isColdLaunch = true then m.homeReadyTimer.control = "start"
+end sub
+
+sub onRuntimeDeepLink()
+    if m.top.inputTick < 1 then return
+    applyDeepLink(m.top.inputContentId, m.top.inputMediaType, false)
+end sub
+
+sub onHomeReady()
+    fireLaunchComplete()
+end sub
+
+sub onLaunchWatchdog()
+    fireLaunchComplete()
+end sub
+
+sub fireLaunchComplete()
+    if m.launchComplete = true then return
+    m.launchComplete = true
+    m.pendingLaunchPlay = false
+    if m.launchWatchdog <> invalid then m.launchWatchdog.control = "stop"
+    m.top.signalBeacon("AppLaunchComplete")
 end sub

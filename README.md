@@ -6,7 +6,7 @@ Tickets, replies, posting, and plan sign-up stay on the websites. The TV app tel
 
 This channel does **not** need API keys, Discord tokens, or Channel Store secrets in the repo. Everything it reads is already public.
 
-**Status:** `v0.2.0-beta` — living-room dogfood on Roku OS 15. Sideload, or share as a Roku Dashboard beta. Not a public Streaming Store listing yet.
+**Status:** `v0.2.2-beta` — the package submitted to the Roku Streaming Store (minimum firmware 15.1). Sideload and the Dashboard beta still work while Roku reviews the public listing.
 
 ## What it does
 
@@ -38,6 +38,10 @@ make sideload
 
 `make smoke` checks the public APIs are reachable from this machine.
 
+`make screenshots` drives the sideloaded channel over the network and writes six 1920×1080 JPEGs to `out/store-screens/` for the Channel Store listing. The TV remote will move by itself; leave it alone until it finishes.
+
+`make deeplink` launches the sideloaded channel straight into Brighton live (`contentId=brighton`, `mediaType=live`).
+
 ## Channel Store packaging
 
 You do **not** need TTNS backend credentials. You need a **Roku developer account** that belongs to TTNS, plus the **packaging password** from `genkey` on a linked developer box.
@@ -54,7 +58,7 @@ The full checklist — Dashboard beta vs public Streaming Store, listing copy, s
 
 Store assets this repo already generates:
 
-- Channel posters: `images/channel-poster_*.png` (540×405 / 290×218 / 214×144)
+- Channel posters: `images/channel-poster_*.png` (540×405 / 290×218 / 246×140)
 - Splash: `images/splash-screen_*.jpg`
 
 You still need 1920×1080 Channel Store screenshots from a real Roku (home, player, gigs, community, promote).
@@ -86,4 +90,4 @@ Add a new city in `source/stations.brs` (`id`, stream URL, `https://<city>.ttns.
 
 ## License
 
-Private / unpublished beta for TTNS. Do not treat this as a public Streaming Store product yet.
+Private TTNS channel. `v0.2.2-beta` is the build submitted to the Roku Streaming Store; it is not live in Search until Roku finishes review.

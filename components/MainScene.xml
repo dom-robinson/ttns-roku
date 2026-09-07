@@ -2,13 +2,19 @@
 <component name="MainScene" extends="Scene">
     <interface>
         <field id="exitApp" type="boolean" value="false" />
+        <field id="inputTick" type="integer" alwaysNotify="true" onChange="onRuntimeDeepLink" />
+        <field id="inputContentId" type="string" />
+        <field id="inputMediaType" type="string" />
     </interface>
     <script type="text/brightscript" uri="pkg:/source/config.brs" />
     <script type="text/brightscript" uri="pkg:/source/utils.brs" />
     <script type="text/brightscript" uri="pkg:/source/registry.brs" />
     <script type="text/brightscript" uri="pkg:/source/stations.brs" />
+    <script type="text/brightscript" uri="pkg:/source/deeplink.brs" />
     <script type="text/brightscript" uri="MainScene.brs" />
     <children>
+        <Timer id="homeReadyTimer" duration="0.4" repeat="false" />
+        <Timer id="launchWatchdog" duration="12" repeat="false" />
         <Audio id="player" />
         <HomeScreen id="home" />
         <PlayerScreen id="playerUi" visible="false" />

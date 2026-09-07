@@ -1,15 +1,24 @@
 sub init()
-    m.top.focusable = true
+    m.top.focusable = false
+    m.border = m.top.findNode("border")
     m.bg = m.top.findNode("bg")
     m.nameLabel = m.top.findNode("nameLabel")
     m.bodyLabel = m.top.findNode("bodyLabel")
     m.photo = m.top.findNode("photo")
+    m.avatar = m.top.findNode("avatar")
     m.emojis = [
         m.top.findNode("emoji0"),
         m.top.findNode("emoji1"),
         m.top.findNode("emoji2"),
-        m.top.findNode("emoji3")
+        m.top.findNode("emoji3"),
+        m.top.findNode("emoji4"),
+        m.top.findNode("emoji5")
     ]
+    m.emojiXs = [160, 208, 256, 304, 352, 400]
+    m.hasEmoji = false
+    m.bodyLabel.wrap = true
+    m.bodyLabel.ellipsizeOnBoundary = false
+    if m.global <> invalid then m.global.observeField("chatFocusIndex", "onChatFocusIndex")
 end sub
 
 sub onItemContent()
@@ -21,75 +30,126 @@ sub onItemContent()
         color = item.ShortDescriptionLine1
     end if
     m.nameLabel.color = color
-    m.bodyLabel.text = TrimText(item.description)
-    photo = ""
-    if item.HDPosterUrl <> invalid then photo = TrimText(item.HDPosterUrl)
+    avatar = ""
+    if item.avatarUrl <> invalid then avatar = TrimText(item.avatarUrl)
+    if avatar = ""
+        m.avatar.uri = "pkg:/images/ttns-logo.png"
+    else
+        m.avatar.uri = avatar
+    end if
+    photo = rowPhotoUrl(item)
     if photo = ""
         m.photo.uri = ""
         m.photo.visible = false
-        m.bodyLabel.width = 1108
-        m.nameLabel.width = 1108
+        m.bodyLabel.width = 920
+        m.nameLabel.width = 920
     else
         m.photo.uri = photo
         m.photo.visible = true
-        m.bodyLabel.width = 780
-        m.nameLabel.width = 780
+        m.bodyLabel.width = 620
+        m.nameLabel.width = 620
     end if
-    urls = [itemField(item, "emoji1"), itemField(item, "emoji2"), itemField(item, "emoji3"), itemField(item, "emoji4")]
+    urls = rowEmojiUrls(item)
+    m.hasEmoji = false
     i = 0
-    while i < 4
+    while i < 6
         poster = m.emojis[i]
-        url = urls[i]
+        url = ""
+        if i < urls.Count() then url = urls[i]
         if url = ""
             poster.uri = ""
             poster.visible = false
         else
             poster.uri = url
             poster.visible = true
+            m.hasEmoji = true
         end if
         i = i + 1
     end while
+    wrapped = WrapTextToWidth(TrimText(item.description), m.bodyLabel.width, 24, false)
+    applyRowSizeForText(wrapped)
+    m.bodyLabel.text = wrapped
+    paintFocus()
 end sub
 
-function itemField(item as Object, name as String) as String
+function rowPhotoUrl(item as Object) as String
     if item = invalid then return ""
-    if name = "emoji1" and item.emoji1 <> invalid then return TrimText(item.emoji1)
-    if name = "emoji2" and item.emoji2 <> invalid then return TrimText(item.emoji2)
-    if name = "emoji3" and item.emoji3 <> invalid then return TrimText(item.emoji3)
-    if name = "emoji4" and item.emoji4 <> invalid then return TrimText(item.emoji4)
+    if item.photoUrl <> invalid
+        url = TrimText(item.photoUrl)
+        if url <> "" then return url
+    end if
+    if item.HDPosterUrl <> invalid then return TrimText(item.HDPosterUrl)
     return ""
 end function
 
+function rowEmojiUrls(item as Object) as Object
+    urls = []
+    if item = invalid then return urls
+    line = ""
+    if item.emojiLine <> invalid then line = TrimText(item.emojiLine)
+    if line <> ""
+        parts = line.Split("|")
+        for each part in parts
+            url = TrimText(part)
+            if url <> "" then urls.Push(url)
+        end for
+        return urls
+    end if
+    names = ["emoji1", "emoji2", "emoji3", "emoji4"]
+    for each name in names
+        url = ""
+        if name = "emoji1" and item.emoji1 <> invalid then url = TrimText(item.emoji1)
+        if name = "emoji2" and item.emoji2 <> invalid then url = TrimText(item.emoji2)
+        if name = "emoji3" and item.emoji3 <> invalid then url = TrimText(item.emoji3)
+        if name = "emoji4" and item.emoji4 <> invalid then url = TrimText(item.emoji4)
+        if url <> "" then urls.Push(url)
+    end for
+    return urls
+end function
+
+sub applyRowSizeForText(text as String)
+    lines = CountTextLines(text)
+    if lines < 1 then lines = 1
+    lineH = 40
+    bodyH = lines * lineH
+    if bodyH > 400 then bodyH = 400
+    m.bodyLabel.height = bodyH
+    m.bodyLabel.maxLines = lines
+    emojiY = 38 + bodyH + 8
+    i = 0
+    while i < 6
+        m.emojis[i].translation = [m.emojiXs[i], emojiY]
+        i = i + 1
+    end while
+    h = emojiY
+    if m.hasEmoji = true then h = h + 40
+    h = h + 8
+    if h < 152 then h = 152
+    m.border.height = h
+    m.bg.height = h - 8
+    m.top.clippingRect = [0, 0, 1140, h]
+    m.top.rowHeight = h
+end sub
+
 sub onFocusPercent()
+    paintFocus()
+end sub
+
+sub onChatFocusIndex()
+    paintFocus()
+end sub
+
+sub paintFocus()
     focused = false
-    if m.top.focusPercent > 0.5 then focused = true
+    idx = -1
+    item = m.top.itemContent
+    if item <> invalid and item.chatIndex <> invalid then idx = item.chatIndex
+    if m.global <> invalid and m.global.chatFocusIndex = idx then focused = true
     if focused = true
-        m.bg.color = "0x1C2A16FF"
+        m.border.color = "0xFF8800FF"
+        m.bg.color = "0x2A1A0AFF"
     else
+        m.border.color = "0x2A2A2AFF"
         m.bg.color = "0x111111FF"
     end if
 end sub
-
-function onKeyEvent(key as String, press as Boolean) as Boolean
-    if not press then return false
-    if key = "OK" or key = "play"
-        if m.global <> invalid
-            tick = m.global.chatToggleTick
-            m.global.chatToggleTick = tick + 1
-        end if
-        return true
-    end if
-    if key = "up"
-        item = m.top.itemContent
-        idx = 0
-        if item <> invalid and item.chatIndex <> invalid then idx = item.chatIndex
-        if idx <= 0
-            if m.global <> invalid
-                tick = m.global.chatLeaveTick
-                m.global.chatLeaveTick = tick + 1
-            end if
-            return true
-        end if
-    end if
-    return false
-end function

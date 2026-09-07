@@ -26,6 +26,28 @@ function TrimText(value as Dynamic) as String
     return text.Trim()
 end function
 
+function EstimateWrappedHeight(text as String, width as Integer, lineH as Integer, maxLines as Integer) as Integer
+    raw = TrimText(text)
+    if raw = "" then return 0
+    per = Int(width / 14)
+    if per < 16 then per = 16
+    lines = 0
+    chunks = raw.Split(Chr(10))
+    for each chunk in chunks
+        n = Len(chunk)
+        if n <= 0
+            lines = lines + 1
+        else
+            add = Int((n + per - 1) / per)
+            if add < 1 then add = 1
+            lines = lines + add
+        end if
+    end for
+    if lines < 1 then lines = 1
+    if lines > maxLines then lines = maxLines
+    return lines * lineH
+end function
+
 function FirstNonEmpty(values as Object) as String
     for each value in values
         text = TrimText(value)
@@ -161,9 +183,92 @@ end function
 
 function TextPixelWidth(text as String, fontSize as Integer, bold as Boolean) as Integer
     if text = "" then return 0
-    factor = 0.52
-    if bold = true then factor = 0.58
+    factor = 0.64
+    if bold = true then factor = 0.70
     return Int(Len(text) * fontSize * factor)
+end function
+
+function CountTextLines(text as String) as Integer
+    raw = TrimText(text)
+    if raw = "" then return 0
+    n = 1
+    i = 1
+    total = Len(raw)
+    while i <= total
+        if Mid(raw, i, 1) = Chr(10) then n = n + 1
+        i = i + 1
+    end while
+    return n
+end function
+
+function BreakLongWord(word as String, width as Integer, fontSize as Integer, bold as Boolean) as Object
+    chunks = []
+    if word = "" then return chunks
+    current = ""
+    i = 1
+    total = Len(word)
+    while i <= total
+        ch = Mid(word, i, 1)
+        trial = current + ch
+        if current <> "" and TextPixelWidth(trial, fontSize, bold) > width
+            chunks.Push(current)
+            current = ch
+        else
+            current = trial
+        end if
+        i = i + 1
+    end while
+    if current <> "" then chunks.Push(current)
+    return chunks
+end function
+
+function WrapTextToWidth(text as String, width as Integer, fontSize as Integer, bold as Boolean) as String
+    raw = TrimText(text)
+    if raw = "" then return ""
+    if width < 80 then width = 80
+    words = raw.Split(" ")
+    lines = []
+    current = ""
+    for each word in words
+        if word <> ""
+            trial = word
+            if current <> "" then trial = current + " " + word
+            if TextPixelWidth(trial, fontSize, bold) <= width
+                current = trial
+            else
+                if current <> "" then lines.Push(current)
+                if TextPixelWidth(word, fontSize, bold) <= width
+                    current = word
+                else
+                    chunks = BreakLongWord(word, width, fontSize, bold)
+                    n = chunks.Count()
+                    if n > 1
+                        i = 0
+                        while i < n - 1
+                            lines.Push(chunks[i])
+                            i = i + 1
+                        end while
+                        current = chunks[n - 1]
+                    else if n = 1
+                        current = chunks[0]
+                    else
+                        current = ""
+                    end if
+                end if
+            end if
+        end if
+    end for
+    if current <> "" then lines.Push(current)
+    if lines.Count() > 10
+        slim = []
+        i = 0
+        while i < 10
+            slim.Push(lines[i])
+            i = i + 1
+        end while
+        lines = slim
+    end if
+    return JoinStrings(lines, Chr(10))
 end function
 
 function CssToRokuColor(css as String) as String
@@ -246,41 +351,226 @@ function FirstAttachmentUrl(raw as Object) as String
 end function
 
 function TwemojiUrlForIndex(idx as Integer) as String
-    hexes = ["1f44d", "2764-fe0f", "1f602", "1f525", "1f389", "2b50", "1f4af", "1f44f"]
+    hexes = ["1f44d", "2764", "1f602", "1f525", "1f389", "2b50", "1f4af", "1f44f"]
     if idx < 0 then return ""
     if idx >= hexes.Count() then return ""
     return "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/" + hexes[idx] + ".png"
 end function
 
-function CollectChatEmojiUrls(raw as String, emojiMap as Object) as Object
+function UsableDiscordEmojiId(value as Dynamic) as String
+    if value = invalid then return ""
+    text = TrimText(value)
+    if text = "" then return ""
+    lower = LCase(text)
+    if lower = "invalid" or lower = "null" or lower = "undefined" then return ""
+    re = CreateObject("roRegex", "^[0-9]+$", "")
+    if re.IsMatch(text) = true then return text
+    return ""
+end function
+
+function IsAsciiToken(value as String) as Boolean
+    text = TrimText(value)
+    if text = "" then return false
+    re = CreateObject("roRegex", "^[A-Za-z0-9_]+$", "")
+    return re.IsMatch(text)
+end function
+
+function ToHexLower(n as Integer) as String
+    digits = "0123456789abcdef"
+    if n <= 0 then return "0"
+    out = ""
+    value = n
+    while value > 0
+        remv = value mod 16
+        out = Mid(digits, remv + 1, 1) + out
+        value = Int(value / 16)
+    end while
+    return out
+end function
+
+function DecodeAt(text as String, i as Integer) as Object
+    v = Asc(Mid(text, i, 1))
+    n = Len(text)
+    if v >= 55296 and v <= 56319 and i < n
+        v2 = Asc(Mid(text, i + 1, 1))
+        if v2 >= 56320 and v2 <= 57343
+            cp = 65536 + ((v - 55296) * 1024) + (v2 - 56320)
+            return { cp: cp, nxt: i + 2 }
+        end if
+    end if
+    if v < 128 or v >= 256 then return { cp: v, nxt: i + 1 }
+    if v >= 240 and i + 3 <= n
+        b2 = Asc(Mid(text, i + 1, 1))
+        b3 = Asc(Mid(text, i + 2, 1))
+        b4 = Asc(Mid(text, i + 3, 1))
+        cp = ((v - 240) * 262144) + ((b2 - 128) * 4096) + ((b3 - 128) * 64) + (b4 - 128)
+        return { cp: cp, nxt: i + 4 }
+    end if
+    if v >= 224 and i + 2 <= n
+        b2 = Asc(Mid(text, i + 1, 1))
+        b3 = Asc(Mid(text, i + 2, 1))
+        cp = ((v - 224) * 4096) + ((b2 - 128) * 64) + (b3 - 128)
+        return { cp: cp, nxt: i + 3 }
+    end if
+    if v >= 192 and i + 1 <= n
+        b2 = Asc(Mid(text, i + 1, 1))
+        cp = ((v - 192) * 64) + (b2 - 128)
+        return { cp: cp, nxt: i + 2 }
+    end if
+    return { cp: v, nxt: i + 1 }
+end function
+
+function IsEmojiCode(cp as Integer) as Boolean
+    if cp >= 127462 and cp <= 127487 then return true
+    if cp >= 127744 and cp <= 129791 then return true
+    if cp >= 9728 and cp <= 10175 then return true
+    if cp >= 126976 and cp <= 127487 then return true
+    if cp = 169 or cp = 174 then return true
+    if cp = 8482 then return true
+    return false
+end function
+
+function IsEmojiJoiner(cp as Integer) as Boolean
+    if cp = 8205 then return true
+    if cp = 65039 then return true
+    if cp >= 127995 and cp <= 127999 then return true
+    return false
+end function
+
+function TwemojiUrlFromCodepoints(cps as Object) as String
+    if cps = invalid or cps.Count() = 0 then return ""
+    parts = []
+    for each cp in cps
+        if cp <> 65039 then parts.Push(ToHexLower(cp))
+    end for
+    if parts.Count() = 0 then return ""
+    return "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/" + JoinStrings(parts, "-") + ".png"
+end function
+
+function TwemojiUrlFromText(text as String) as String
+    raw = TrimText(text)
+    if raw = "" then return ""
+    cps = []
+    i = 1
+    n = Len(raw)
+    while i <= n
+        piece = DecodeAt(raw, i)
+        cps.Push(piece.cp)
+        i = piece.nxt
+    end while
+    return TwemojiUrlFromCodepoints(cps)
+end function
+
+function UnicodeEmojiUrlsFromText(text as String) as Object
+    urls = []
+    raw = TrimText(text)
+    if raw = "" then return urls
+    i = 1
+    n = Len(raw)
+    while i <= n
+        piece = DecodeAt(raw, i)
+        cp = piece.cp
+        i = piece.nxt
+        if IsEmojiCode(cp) = true
+            seq = [cp]
+            while i <= n
+                nxtp = DecodeAt(raw, i)
+                if IsEmojiJoiner(nxtp.cp) = true or IsEmojiCode(nxtp.cp) = true
+                    seq.Push(nxtp.cp)
+                    i = nxtp.nxt
+                else
+                    exit while
+                end if
+            end while
+            url = TwemojiUrlFromCodepoints(seq)
+            if url <> "" then urls.Push(url)
+        end if
+    end while
+    return urls
+end function
+
+function ReactionEmojiUrls(raw as Object) as Object
+    urls = []
+    if raw = invalid then return urls
+    reactions = raw.reactions
+    if reactions = invalid then return urls
+    for each item in reactions
+        if item <> invalid
+            emoji = item.emoji
+            if emoji = invalid then emoji = item
+            if emoji <> invalid
+                emojiId = UsableDiscordEmojiId(emoji.id)
+                if emojiId <> ""
+                    ext = ".png"
+                    if emoji.animated = true then ext = ".gif"
+                    urls.Push("https://cdn.discordapp.com/emojis/" + emojiId + ext)
+                else
+                    url = TwemojiUrlFromText(TrimText(emoji.name))
+                    if url <> "" then urls.Push(url)
+                end if
+            end if
+        end if
+    end for
+    return urls
+end function
+
+function CollectChatEmojiUrls(rawText as String, rawMsg as Object, emojiMap as Object) as Object
     urls = []
     seen = {}
-    custom = DiscordCustomEmojiUrls(raw)
+    sources = []
+    custom = DiscordCustomEmojiUrls(rawText)
     for each url in custom
+        sources.Push(url)
+    end for
+    react = ReactionEmojiUrls(rawMsg)
+    for each url in react
+        sources.Push(url)
+    end for
+    uni = UnicodeEmojiUrlsFromText(rawText)
+    for each url in uni
+        sources.Push(url)
+    end for
+    if emojiMap <> invalid
+        for each key in emojiMap
+            if key <> "" and Instr(rawText, key) > 0
+                if Left(key, 1) = ":" or IsAsciiToken(key) = false
+                    url = emojiMap[key]
+                    if url <> "" then sources.Push(url)
+                end if
+            end if
+        end for
+    end if
+    for each url in sources
         if url <> "" and seen[url] = invalid
             seen[url] = true
             urls.Push(url)
         end if
     end for
-    if emojiMap <> invalid
-        for each key in emojiMap
-            if key <> "" and Instr(raw, key) >= 0
-                url = emojiMap[key]
-                if url <> "" and seen[url] = invalid
-                    seen[url] = true
-                    urls.Push(url)
-                end if
-            end if
-        end for
-    end if
-    if urls.Count() <= 4 then return urls
+    if urls.Count() <= 6 then return urls
     slim = []
     i = 0
-    while i < 4
+    while i < 6
         slim.Push(urls[i])
         i = i + 1
     end while
     return slim
+end function
+
+function DiscordAvatarUrl(author as Object) as String
+    if author = invalid then return DefaultDiscordAvatar("")
+    url = SafeHttpUrl(TrimText(author.avatar))
+    if url <> "" then return url
+    return DefaultDiscordAvatar(TrimText(author.id))
+end function
+
+function DefaultDiscordAvatar(userId as String) as String
+    n = 0
+    if userId <> ""
+        last = Right(userId, 1)
+        n = last.ToInt()
+        n = n mod 6
+    end if
+    return "https://cdn.discordapp.com/embed/avatars/" + n.ToStr() + ".png"
 end function
 
 function StripMappedEmojiText(text as String, emojiMap as Object) as String

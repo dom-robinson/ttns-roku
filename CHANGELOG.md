@@ -1,5 +1,48 @@
 # Changelog
 
+## v0.2.0-beta — 2026-09-07
+
+Living-room beta. Sideload, or share through a Roku Dashboard beta. Still not a public Streaming Store listing.
+
+### Listen live
+
+- Player owns every key. Chat is a custom clipped list, not a MarkupGrid, so rows can grow with wrapped text.
+- Manual wrap (`WrapTextToWidth`) so chat no longer ellipsizes mid-sentence.
+- Avatars stay 144×144 and do not stretch on tall rows. Up to six emoji posters per message.
+- Chat highlight is a thin orange ring (`0xFF8800FF`), same idea as Promote. Do not use MarkupList `focusPercent` for this — it paints a false green on the top visible row.
+- Right or Down enters chat. Left / Back leaves. OK opens a photo. Rewind / FF change station only from the player.
+- Removed the “CHAT - chatbot.ttns.uk” label. The right-justified hint shows “Newest in view” or the 10s resume warning.
+- Track title is red; stream line is light red. NOW PLAYING / ON AIR stay green.
+
+### Gigs and community
+
+- ListScreen owns every key. The poster MarkupGrid is never focused, so Rewind / FF no longer page the grid.
+- Rewind / FF from posters jump to the filter chips (When / Venue / Promote, or Category / Promote). Same keys walk the chips.
+- Grey status line: `{n} upcoming  -  Rewind / FF filters  -  OK for details`.
+- Applying a filter stays on the filtered poster grid. The next OK opens that gig or listing.
+- Removed the bottom help label that sat on top of posters.
+
+### Promote
+
+- Replaced the green-on-white LabelList with `PlanListRow`: dark fill, light text, thin orange border on the selected product.
+
+### Branding
+
+- Home-row posters are the sizes Roku actually uses: 540×405, **290×218**, **214×144**. The older 336×210 / 246×140 tiles stretched the circle into an oval.
+
+### Repo
+
+- Dropped unused `PlanCard` and `CardRow` leftovers.
+- Channel Store packaging and certification notes live in `docs/STORE.md`.
+
+### Still not in this beta
+
+- Public Streaming Store listing (needs a signed `.pkg`, Dashboard listing, and certification).
+- Bristol as a live selectable stream (still marked coming soon).
+- Native emoji glyphs in labels.
+- Chat posting, tickets, or sign-up on the TV.
+- Deep-link / `AppLaunchComplete` work that a public store submission will likely need.
+
 ## v0.1.0-alpha — 2026-09-07
 
 First dogfood cut of the public TTNS FM Roku channel. Sideload only.

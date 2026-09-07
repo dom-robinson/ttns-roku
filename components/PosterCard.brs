@@ -5,6 +5,7 @@ sub init()
     m.titleMarquee = m.top.findNode("titleMarquee")
     m.metaMarquee = m.top.findNode("metaMarquee")
     m.dateLabel = m.top.findNode("dateLabel")
+    if m.global <> invalid then m.global.observeField("listFocusIndex", "onListFocusIndex")
 end sub
 
 sub onItemContent()
@@ -22,11 +23,23 @@ sub onItemContent()
     else
         m.thumb.uri = posterUrl
     end if
+    paintFocus()
+end sub
+
+sub onListFocusIndex()
+    paintFocus()
 end sub
 
 sub onFocusPercent()
+    paintFocus()
+end sub
+
+sub paintFocus()
     focused = false
-    if m.top.focusPercent > 0.5 then focused = true
+    idx = -1
+    item = m.top.itemContent
+    if item <> invalid and item.gridIndex <> invalid then idx = item.gridIndex
+    if m.global <> invalid and m.global.listFocusIndex = idx then focused = true
     if focused = true
         m.border.color = "0x00FF00FF"
         m.bg.color = "0x1C2A16FF"
@@ -41,22 +54,3 @@ sub onFocusPercent()
         m.metaMarquee.active = false
     end if
 end sub
-
-function onKeyEvent(key as String, press as Boolean) as Boolean
-    if not press then return false
-    item = m.top.itemContent
-    idx = 0
-    if item <> invalid and item.gridIndex <> invalid then idx = item.gridIndex
-    jump = false
-    if key = "options" then jump = true
-    if key = "replay" then jump = true
-    if key = "up" and idx < 5 then jump = true
-    if jump = true
-        if m.global <> invalid
-            tick = m.global.listFilterTick
-            m.global.listFilterTick = tick + 1
-        end if
-        return true
-    end if
-    return false
-end function

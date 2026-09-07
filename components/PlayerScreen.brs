@@ -8,22 +8,33 @@ sub init()
     m.onAir = m.top.findNode("onAir")
     m.onAirAnim = m.top.findNode("onAirAnim")
     m.chatList = m.top.findNode("chatList")
+    m.chatHint = m.top.findNode("chatHint")
+    m.chatEndBar = m.top.findNode("chatEndBar")
+    m.helpLabel = m.top.findNode("helpLabel")
+    m.photoModal = m.top.findNode("photoModal")
+    m.photoModalImg = m.top.findNode("photoModalImg")
+    m.chatSnap = m.top.findNode("chatSnap")
+    m.photoModal.focusable = true
     m.zone = "player"
     m.chatFollow = true
+    m.chatIgnoreFocus = false
+    m.chatFocusIdx = 0
+    m.chatScrollY = 0
+    m.chatClipH = 628
+    m.chatContentH = 0
+    m.chatGap = 6
+    m.photoJustOpened = false
     m.chatSig = ""
     m.canvasLoaded = false
     m.emojiMap = {}
     m.artwork.uri = BrandLogoUrl()
     m.top.trackTitle = "TTNS FM"
     clearChat("Loading the room...")
+    paintChatHint()
     m.feedTimer.observeField("fire", "onFeedTick")
     m.chatResume.observeField("fire", "onChatResume")
-    m.chatList.observeField("itemFocused", "onChatItemFocused")
+    m.chatSnap.observeField("fire", "onChatSnap")
     m.top.observeField("visible", "onVisible")
-    if m.global <> invalid
-        m.global.observeField("chatLeaveTick", "onLeaveChat")
-        m.global.observeField("chatToggleTick", "onChatToggle")
-    end if
 end sub
 
 function takeFocus() as Boolean
@@ -47,6 +58,8 @@ function stopLiveFeeds() as Boolean
     m.feedTimer.control = "stop"
     m.onAirAnim.control = "stop"
     m.chatResume.control = "stop"
+    m.chatSnap.control = "stop"
+    closePhotoModal()
     return true
 end function
 
@@ -229,149 +242,359 @@ function MakeChatRow(raw as Object) as Object
     if raw = invalid then return invalid
     name = "Guest"
     color = "0x00FF00FF"
+    avatar = DefaultDiscordAvatar("")
     author = raw.author
     if author <> invalid
         name = FirstNonEmpty([author.display_name, author.username, "Guest"])
         color = CssToRokuColor(TrimText(author.role_color))
+        avatar = DiscordAvatarUrl(author)
     end if
     rawText = TrimText(raw.content)
     text = StripMappedEmojiText(DiscordDisplayText(rawText), m.emojiMap)
     photo = FirstAttachmentUrl(raw)
-    emojis = CollectChatEmojiUrls(rawText, m.emojiMap)
+    emojis = CollectChatEmojiUrls(rawText, raw, m.emojiMap)
     if text = "" and photo = "" and emojis.Count() = 0 then return invalid
-    e1 = ""
-    e2 = ""
-    e3 = ""
-    e4 = ""
-    if emojis.Count() > 0 then e1 = emojis[0]
-    if emojis.Count() > 1 then e2 = emojis[1]
-    if emojis.Count() > 2 then e3 = emojis[2]
-    if emojis.Count() > 3 then e4 = emojis[3]
     return {
         name: name,
         color: color,
         text: text,
         photo: photo,
-        emoji1: e1,
-        emoji2: e2,
-        emoji3: e3,
-        emoji4: e4
+        avatar: avatar,
+        emojiLine: JoinStrings(emojis, "|")
     }
 end function
 
 sub clearChat(message as String)
     m.chatSig = "empty:" + message
-    root = CreateObject("roSGNode", "ContentNode")
-    node = root.createChild("ContentNode")
+    node = CreateObject("roSGNode", "ContentNode")
     node.title = ""
     node.description = message
     node.ShortDescriptionLine1 = "0xA8A8A8FF"
-    node.addFields({ emoji1: "", emoji2: "", emoji3: "", emoji4: "", chatIndex: 0 })
-    m.chatList.content = root
+    node.addFields({ emojiLine: "", chatIndex: 0, photoUrl: "", avatarUrl: "" })
+    replaceChatRows([node])
+    m.chatFocusIdx = 0
+    layoutChatRows()
+    setChatScroll(0)
 end sub
 
 sub paintChat(rows as Object)
     sig = ""
     for each item in rows
-        sig = sig + item.name + "|" + item.text + "|" + item.photo + "|" + item.emoji1
+        sig = sig + item.name + "|" + item.text + "|" + item.photo + "|" + item.emojiLine
     end for
-    if sig = m.chatSig then return
+    shouldFollow = m.chatFollow
+    if sig = m.chatSig
+        if shouldFollow = true then queueChatSnap()
+        return
+    end if
     m.chatSig = sig
-    root = CreateObject("roSGNode", "ContentNode")
+    nodes = []
     i = 0
     for each item in rows
-        node = root.createChild("ContentNode")
+        node = CreateObject("roSGNode", "ContentNode")
         node.title = item.name
         node.description = item.text
         node.ShortDescriptionLine1 = item.color
         if item.photo <> "" then node.HDPosterUrl = item.photo
         node.addFields({
-            emoji1: item.emoji1,
-            emoji2: item.emoji2,
-            emoji3: item.emoji3,
-            emoji4: item.emoji4,
-            chatIndex: i
+            emojiLine: item.emojiLine,
+            chatIndex: i,
+            photoUrl: item.photo,
+            avatarUrl: item.avatar
         })
+        nodes.Push(node)
         i = i + 1
     end for
-    m.chatList.content = root
-    if m.chatFollow = true and rows.Count() > 0
-        lastIdx = rows.Count() - 1
-        m.chatList.jumpToItem = lastIdx
+    replaceChatRows(nodes)
+    layoutChatRows()
+    lastIdx = nodes.Count() - 1
+    if m.chatFocusIdx > lastIdx then m.chatFocusIdx = lastIdx
+    if m.chatFocusIdx < 0 then m.chatFocusIdx = 0
+    if shouldFollow = true then m.chatFollow = true
+    queueChatSnap()
+end sub
+
+sub replaceChatRows(nodes as Object)
+    while m.chatList.getChildCount() > 0
+        m.chatList.removeChildIndex(0)
+    end while
+    for each node in nodes
+        row = m.chatList.createChild("ChatRow")
+        row.itemContent = node
+    end for
+end sub
+
+sub layoutChatRows()
+    y = 0
+    n = m.chatList.getChildCount()
+    i = 0
+    while i < n
+        row = m.chatList.getChild(i)
+        row.translation = [0, y]
+        h = row.rowHeight
+        if h < 152 then h = 152
+        y = y + h + m.chatGap
+        i = i + 1
+    end while
+    if y > 0 then y = y - m.chatGap
+    m.chatContentH = y
+end sub
+
+sub setChatScroll(y as Integer)
+    maxY = m.chatContentH - m.chatClipH
+    if maxY < 0 then maxY = 0
+    if y < 0 then y = 0
+    if y > maxY then y = maxY
+    m.chatScrollY = y
+    m.chatList.translation = [0, 0 - y]
+end sub
+
+function chatRowHeight(idx as Integer) as Integer
+    row = m.chatList.getChild(idx)
+    if row = invalid then return 152
+    h = row.rowHeight
+    if h < 152 then return 152
+    return h
+end function
+
+function chatRowTop(idx as Integer) as Integer
+    y = 0
+    i = 0
+    while i < idx
+        y = y + chatRowHeight(i) + m.chatGap
+        i = i + 1
+    end while
+    return y
+end function
+
+function chatFollowStart() as Integer
+    count = chatCount()
+    if count < 1 then return 0
+    lastIdx = count - 1
+    used = 0
+    i = lastIdx
+    while i >= 0
+        used = used + chatRowHeight(i)
+        if i < lastIdx then used = used + m.chatGap
+        if used > m.chatClipH
+            start = i + 1
+            if start > lastIdx then start = lastIdx
+            return start
+        end if
+        i = i - 1
+    end while
+    return 0
+end function
+
+sub ensureChatVisible(idx as Integer)
+    count = chatCount()
+    if count < 1 then return
+    if idx < 0 then idx = 0
+    lastIdx = count - 1
+    if idx > lastIdx then idx = lastIdx
+    top = chatRowTop(idx)
+    h = chatRowHeight(idx)
+    if h >= m.chatClipH
+        setChatScroll(top)
+        return
+    end if
+    bot = top + h
+    if top < m.chatScrollY
+        setChatScroll(top)
+    else if bot > m.chatScrollY + m.chatClipH
+        setChatScroll(bot - m.chatClipH)
+    end if
+end sub
+
+sub queueChatSnap()
+    m.chatIgnoreFocus = true
+    m.chatSnap.control = "stop"
+    m.chatSnap.control = "start"
+end sub
+
+sub onChatSnap()
+    layoutChatRows()
+    count = chatCount()
+    if count > 0
+        lastIdx = count - 1
+        if m.chatFollow = true
+            m.chatFocusIdx = lastIdx
+            setChatScroll(m.chatContentH)
+        else
+            if m.chatFocusIdx > lastIdx then m.chatFocusIdx = lastIdx
+            if m.chatFocusIdx < 0 then m.chatFocusIdx = 0
+            ensureChatVisible(m.chatFocusIdx)
+        end if
+        if m.zone = "chat" and m.global <> invalid then m.global.chatFocusIndex = m.chatFocusIdx
+    end if
+    m.chatIgnoreFocus = false
+    if m.zone = "chat" then m.top.setFocus(true)
+    paintChatHint()
+end sub
+
+sub openPhotoForIndex(idx as Integer)
+    if idx < 0 then return
+    if idx >= chatCount() then return
+    row = m.chatList.getChild(idx)
+    if row = invalid then return
+    node = row.itemContent
+    if node = invalid then return
+    url = ""
+    if node.photoUrl <> invalid then url = SafeHttpUrl(TrimText(node.photoUrl))
+    if url = "" and node.HDPosterUrl <> invalid then url = SafeHttpUrl(TrimText(node.HDPosterUrl))
+    if url = "" then return
+    openPhotoModal(url)
+end sub
+
+sub paintChatHint()
+    if m.chatFollow = true
+        m.chatHint.text = "Newest in view"
+        m.chatHint.color = "0x00FF00FF"
+        m.chatEndBar.color = "0x00FF00FF"
+    else
+        m.chatHint.text = "Older chat  -  back to newest in 10s"
+        m.chatHint.color = "0xFF8800FF"
+        m.chatEndBar.color = "0xFF8800FF"
     end if
 end sub
 
 function chatCount() as Integer
-    content = m.chatList.content
-    if content = invalid then return 0
-    return content.getChildCount()
+    return m.chatList.getChildCount()
 end function
 
-sub onChatItemFocused()
-    count = chatCount()
-    if count < 1 then return
-    lastIdx = count - 1
-    if m.chatList.itemFocused >= lastIdx
-        m.chatFollow = true
-        m.chatResume.control = "stop"
-    else
-        m.chatFollow = false
-        m.chatResume.control = "stop"
-        m.chatResume.control = "start"
-    end if
-end sub
-
 sub onChatResume()
-    count = chatCount()
-    if count < 1 then return
     m.chatFollow = true
-    lastIdx = count - 1
-    m.chatList.jumpToItem = lastIdx
+    queueChatSnap()
+    if m.zone = "chat" then m.top.setFocus(true)
 end sub
 
 sub focusChat()
     m.zone = "chat"
+    m.helpLabel.text = "OK view picture  -  Left / Back leaves chat"
+    if m.chatFollow = true then queueChatSnap()
+    m.top.setFocus(true)
+    syncChatFocus()
+    paintChatHint()
+end sub
+
+sub syncChatFocus()
+    idx = m.chatFocusIdx
+    if idx < 0 then idx = 0
+    lastIdx = chatCount() - 1
+    if lastIdx >= 0 and idx > lastIdx then idx = lastIdx
+    m.chatFocusIdx = idx
+    if m.global <> invalid then m.global.chatFocusIndex = idx
+end sub
+
+sub moveChat(direction as Integer)
     count = chatCount()
-    if m.chatFollow = true and count > 0
-        lastIdx = count - 1
-        m.chatList.jumpToItem = lastIdx
+    if count < 1 then return
+    lastIdx = count - 1
+    idx = m.chatFocusIdx
+    if idx < 0 then idx = 0
+    idx = idx + direction
+    if idx < 0
+        leaveChat()
+        return
     end if
-    m.chatList.setFocus(true)
+    if idx > lastIdx then idx = lastIdx
+    m.chatFocusIdx = idx
+    if idx >= chatFollowStart()
+        setChatScroll(m.chatContentH)
+        m.chatFollow = true
+        m.chatResume.control = "stop"
+    else
+        ensureChatVisible(idx)
+        m.chatFollow = false
+        m.chatResume.control = "stop"
+        m.chatResume.control = "start"
+    end if
+    if m.global <> invalid then m.global.chatFocusIndex = idx
+    paintChatHint()
 end sub
 
 sub leaveChat()
+    if m.photoModal.visible = true
+        closePhotoModal()
+        return
+    end if
     m.zone = "player"
+    m.helpLabel.text = "OK play / pause  -  Right chat  -  Rewind / FF station  -  Back"
+    if m.global <> invalid then m.global.chatFocusIndex = -1
     m.top.setFocus(true)
 end sub
 
-sub onLeaveChat()
-    if m.top.visible = true then leaveChat()
+sub openPhotoModal(url as String)
+    m.photoModalImg.uri = url
+    m.photoModal.visible = true
+    m.photoJustOpened = true
+    m.zone = "photo"
+    m.helpLabel.text = "Back closes the picture"
+    m.top.setFocus(true)
 end sub
 
-sub onChatToggle()
-    if m.top.visible = true then m.top.action = "toggle"
+sub closePhotoModal()
+    if m.photoModal.visible <> true then return
+    m.photoModal.visible = false
+    m.photoModalImg.uri = ""
+    m.photoJustOpened = false
+    m.zone = "chat"
+    m.helpLabel.text = "OK view picture  -  Left / Back leaves chat"
+    m.top.setFocus(true)
+    paintChatHint()
 end sub
 
 function onKeyEvent(key as String, press as Boolean) as Boolean
     if not press then return false
+    if m.zone = "photo"
+        if key = "OK" or key = "play"
+            if m.photoJustOpened = true
+                m.photoJustOpened = false
+                return true
+            end if
+            return true
+        end if
+        if key = "back"
+            closePhotoModal()
+            return true
+        end if
+        return true
+    end if
     if key = "OK" or key = "play"
+        if m.zone = "chat"
+            openPhotoForIndex(m.chatFocusIdx)
+            return true
+        end if
         m.top.action = "toggle"
+        return true
+    else if key = "right"
+        if m.zone <> "chat"
+            focusChat()
+            return true
+        end if
         return true
     else if key = "down"
         if m.zone <> "chat"
             focusChat()
             return true
         end if
+        moveChat(1)
+        return true
     else if key = "up"
+        if m.zone = "chat"
+            moveChat(-1)
+            return true
+        end if
+    else if key = "left"
         if m.zone = "chat"
             leaveChat()
             return true
         end if
-    else if key = "left"
+    else if key = "rewind"
         if m.zone = "chat" then return true
         m.top.action = "prevStation"
         return true
-    else if key = "right"
+    else if key = "fastforward"
         if m.zone = "chat" then return true
         m.top.action = "nextStation"
         return true

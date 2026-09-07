@@ -21,10 +21,12 @@ sub init()
     m.allItems = []
     m.shown = []
     m.filterIndex = 0
+    m.gridIndex = 0
     m.zone = "filters"
     m.whenId = "all"
     m.facetId = "all"
     m.pickerKind = ""
+    m.pickerIndex = 0
     m.whenOptions = [
         { id: "all", label: "All upcoming" },
         { id: "this-week", label: "This week" },
@@ -33,16 +35,11 @@ sub init()
     ]
     m.facetOptions = []
 
-    m.grid.observeField("itemSelected", "onItemSelected")
-    m.grid.observeField("focused", "onGridFocus")
-    m.pickerList.observeField("itemSelected", "onPickerSelected")
-    m.whenBorder.focusable = true
-    m.facetBorder.focusable = true
-    m.plansBorder.focusable = true
-    m.whenBorder.observeField("focused", "onChipFocus")
-    m.facetBorder.observeField("focused", "onChipFocus")
-    m.plansBorder.observeField("focused", "onChipFocus")
-    if m.global <> invalid then m.global.observeField("listFilterTick", "onWantFilters")
+    m.grid.focusable = false
+    m.pickerList.focusable = false
+    m.whenBorder.focusable = false
+    m.facetBorder.focusable = false
+    m.plansBorder.focusable = false
     wireChipFocus()
     paintFilters()
 end sub
@@ -50,9 +47,9 @@ end sub
 function takeFocus() as Boolean
     m.top.visible = true
     if m.picker.visible = true
-        m.pickerList.setFocus(true)
+        holdListFocus()
     else if m.zone = "grid" and m.shown.Count() > 0
-        m.grid.setFocus(true)
+        focusGrid()
     else
         focusFirstChip()
     end if
@@ -80,6 +77,7 @@ function setItems(items as Object) as Boolean
     m.whenId = "all"
     m.facetId = "all"
     m.filterIndex = 0
+    m.gridIndex = 0
     layoutFilters()
     wireChipFocus()
     rebuildFacetOptions()
@@ -158,39 +156,33 @@ sub layoutFilters()
 end sub
 
 sub wireChipFocus()
-    if m.top.kind = "community"
-        m.whenBorder.focusable = false
-        m.facetBorder.focusable = true
-        m.plansBorder.focusable = true
-    else
-        m.whenBorder.focusable = true
-        m.facetBorder.focusable = true
-        m.plansBorder.focusable = true
-    end if
+    m.whenBorder.focusable = false
+    m.facetBorder.focusable = false
+    m.plansBorder.focusable = false
+    m.grid.focusable = false
+    m.pickerList.focusable = false
+end sub
+
+sub holdListFocus()
+    m.top.setFocus(true)
+end sub
+
+sub clearCardFocus()
+    if m.global <> invalid then m.global.listFocusIndex = -1
 end sub
 
 sub focusFirstChip()
     m.zone = "filters"
-    if m.top.kind = "community"
-        m.filterIndex = 0
-        m.facetBorder.setFocus(true)
-    else
-        m.filterIndex = 0
-        m.whenBorder.setFocus(true)
-    end if
+    m.filterIndex = 0
+    clearCardFocus()
+    holdListFocus()
     paintFilters()
 end sub
 
 sub focusChipByIndex()
     m.zone = "filters"
-    kind = currentFilterKind()
-    if kind = "when"
-        m.whenBorder.setFocus(true)
-    else if kind = "facet"
-        m.facetBorder.setFocus(true)
-    else
-        m.plansBorder.setFocus(true)
-    end if
+    clearCardFocus()
+    holdListFocus()
     paintFilters()
 end sub
 
@@ -200,36 +192,38 @@ sub focusGrid()
         return
     end if
     m.zone = "grid"
+    if m.gridIndex < 0 then m.gridIndex = 0
+    if m.gridIndex >= m.shown.Count() then m.gridIndex = 0
     paintFilters()
-    m.grid.setFocus(true)
-    m.grid.jumpToItem = 0
+    syncGridCursor()
+    holdListFocus()
 end sub
 
-sub onChipFocus()
-    if m.whenBorder.hasFocus() = true
-        m.filterIndex = 0
-        m.zone = "filters"
-    else if m.facetBorder.hasFocus() = true
-        if m.top.kind = "community"
-            m.filterIndex = 0
-        else
-            m.filterIndex = 1
-        end if
-        m.zone = "filters"
-    else if m.plansBorder.hasFocus() = true
-        m.filterIndex = lastFilterIndex()
-        m.zone = "filters"
-    else
+sub syncGridCursor()
+    idx = m.gridIndex
+    if idx < 0 then idx = 0
+    lastIdx = m.shown.Count() - 1
+    if lastIdx >= 0 and idx > lastIdx then idx = lastIdx
+    m.gridIndex = idx
+    m.grid.jumpToItem = idx
+    if m.global <> invalid then m.global.listFocusIndex = idx
+end sub
+
+sub moveGrid(dx as Integer, dy as Integer)
+    cols = 5
+    count = m.shown.Count()
+    if count < 1 then return
+    idx = m.gridIndex
+    if idx < 0 then idx = 0
+    if dy < 0 and idx < cols
+        focusChipByIndex()
         return
     end if
-    paintFilters()
-end sub
-
-sub onGridFocus()
-    if m.grid.hasFocus() = true
-        m.zone = "grid"
-        paintFilters()
-    end if
+    idx = idx + dx + (dy * cols)
+    if idx < 0 then idx = 0
+    if idx > count - 1 then idx = count - 1
+    m.gridIndex = idx
+    syncGridCursor()
 end sub
 
 function lastFilterIndex() as Integer
@@ -395,27 +389,35 @@ sub openPicker(kind as String)
         i = i + 1
     end for
     m.pickerKind = kind
+    m.pickerIndex = jump
     m.pickerTitle.text = title
     m.pickerList.content = root
     m.picker.visible = true
-    if root.getChildCount() > 0
-        m.pickerList.jumpToItem = jump
-        m.pickerList.setFocus(true)
-    end if
+    syncPickerCursor()
+    holdListFocus()
 end sub
 
-sub closePicker()
-    m.picker.visible = false
-    m.pickerKind = ""
-    if m.shown.Count() > 0
-        focusGrid()
-    else
-        focusChipByIndex()
-    end if
+function pickerCount() as Integer
+    if m.pickerKind = "when" then return m.whenOptions.Count()
+    return m.facetOptions.Count()
+end function
+
+sub syncPickerCursor()
+    lastIdx = pickerCount() - 1
+    if lastIdx < 0 then return
+    if m.pickerIndex < 0 then m.pickerIndex = 0
+    if m.pickerIndex > lastIdx then m.pickerIndex = lastIdx
+    m.pickerList.jumpToItem = m.pickerIndex
+    m.pickerList.itemFocused = m.pickerIndex
 end sub
 
-sub onPickerSelected()
-    idx = m.pickerList.itemSelected
+sub movePicker(direction as Integer)
+    m.pickerIndex = m.pickerIndex + direction
+    syncPickerCursor()
+end sub
+
+sub applyPickerChoice()
+    idx = m.pickerIndex
     if m.pickerKind = "when"
         if idx >= 0 and idx < m.whenOptions.Count()
             chosen = m.whenOptions[idx]
@@ -428,21 +430,25 @@ sub onPickerSelected()
         end if
     end if
     applyFilters()
-    closePicker()
+    m.gridIndex = 0
 end sub
 
-sub onWantFilters()
-    if m.picker.visible = true then return
-    focusFilters()
+sub closePicker()
+    m.picker.visible = false
+    m.pickerKind = ""
+    if m.shown.Count() > 0
+        focusGrid()
+    else
+        focusChipByIndex()
+    end if
 end sub
 
-sub focusFilters()
-    focusFirstChip()
-end sub
-
-sub onItemSelected()
-    m.top.selectedIndex = m.grid.itemSelected
-    m.top.action = "open"
+sub moveFilter(direction as Integer)
+    m.filterIndex = m.filterIndex + direction
+    lastIdx = lastFilterIndex()
+    if m.filterIndex < 0 then m.filterIndex = 0
+    if m.filterIndex > lastIdx then m.filterIndex = lastIdx
+    focusChipByIndex()
 end sub
 
 function onKeyEvent(key as String, press as Boolean) as Boolean
@@ -451,33 +457,63 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
         if key = "back"
             closePicker()
             return true
+        else if key = "up"
+            movePicker(-1)
+            return true
+        else if key = "down"
+            movePicker(1)
+            return true
+        else if key = "OK" or key = "play"
+            applyPickerChoice()
+            closePicker()
+            return true
         end if
-        return false
+        return true
     end if
     if key = "back"
         m.top.action = "home"
         return true
     end if
+    if key = "rewind"
+        if m.zone = "grid"
+            focusChipByIndex()
+        else
+            moveFilter(-1)
+        end if
+        return true
+    else if key = "fastforward"
+        if m.zone = "grid"
+            focusChipByIndex()
+        else
+            moveFilter(1)
+        end if
+        return true
+    end if
     if m.zone = "grid"
         if key = "up"
-            focused = m.grid.itemFocused
-            if focused < 5
-                focusFirstChip()
-                return true
-            end if
+            moveGrid(0, -1)
+            return true
+        else if key = "down"
+            moveGrid(0, 1)
+            return true
+        else if key = "left"
+            moveGrid(-1, 0)
+            return true
+        else if key = "right"
+            moveGrid(1, 0)
+            return true
+        else if key = "OK" or key = "play"
+            m.top.selectedIndex = m.gridIndex
+            m.top.action = "open"
+            return true
         end if
-        return false
+        return true
     end if
     if key = "right"
-        m.filterIndex = m.filterIndex + 1
-        lastIdx = lastFilterIndex()
-        if m.filterIndex > lastIdx then m.filterIndex = lastIdx
-        focusChipByIndex()
+        moveFilter(1)
         return true
     else if key = "left"
-        m.filterIndex = m.filterIndex - 1
-        if m.filterIndex < 0 then m.filterIndex = 0
-        focusChipByIndex()
+        moveFilter(-1)
         return true
     else if key = "down"
         focusGrid()

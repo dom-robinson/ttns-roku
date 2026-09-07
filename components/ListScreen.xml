@@ -80,14 +80,6 @@
             <FloatFieldInterpolator key="[0.0, 0.5, 1.0]" keyValue="[1.0, 0.4, 1.0]" fieldToInterp="loadingLabel.opacity" />
         </Animation>
 
-        <Label
-            translation="[80,1020]"
-            width="1760"
-            height="40"
-            text="Left / Right filters  -  Down posters  -  Up filters  -  OK details"
-            font="font:SmallestSystemFont"
-            color="0x666666FF" />
-
         <Group id="picker" visible="false">
             <Rectangle width="1920" height="1080" color="0x000000CC" />
             <Rectangle translation="[480,160]" width="960" height="760" color="0x111111FF" />

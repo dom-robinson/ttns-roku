@@ -8,11 +8,9 @@ sub Main(args as Dynamic)
         selectedStationId: "",
         isPlaying: false,
         nowPlayingTitle: "TTNS FM",
-        listFilterTick: 0,
-        chatLeaveTick: 0,
-        chatToggleTick: 0,
-        planPickTick: 0,
-        planPickIndex: 0
+        listFocusIndex: -1,
+        chatFocusIndex: -1,
+        planFocusIndex: 0
     })
 
     scene = screen.CreateScene("MainScene")

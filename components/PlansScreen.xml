@@ -33,13 +33,14 @@
             font="font:SmallSystemFont"
             color="0xA8A8A8FF" />
 
-        <LabelList
+        <MarkupList
             id="list"
             translation="[80,160]"
-            itemSize="[720,68]"
+            itemComponentName="PlanListRow"
+            itemSize="[720, 68]"
+            itemSpacing="[0, 6]"
             numRows="11"
-            color="0xF6F7F4FF"
-            focusedColor="0x00FF00FF" />
+            drawFocusFeedback="false" />
 
         <Rectangle translation="[840,160]" width="1000" height="820" color="0x141414FF" />
         <Rectangle translation="[840,160]" width="8" height="820" color="0x00FF00FF" />

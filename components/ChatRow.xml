@@ -3,37 +3,54 @@
     <interface>
         <field id="itemContent" type="node" onChange="onItemContent" />
         <field id="focusPercent" type="float" onChange="onFocusPercent" />
+        <field id="rowHeight" type="float" value="152" />
     </interface>
     <script type="text/brightscript" uri="pkg:/source/utils.brs" />
     <script type="text/brightscript" uri="ChatRow.brs" />
     <children>
-        <Rectangle id="bg" width="1140" height="196" color="0x111111FF" />
+        <Rectangle id="border" width="1140" height="152" color="0x2A2A2AFF" />
+        <Rectangle id="bg" translation="[4,4]" width="1132" height="144" color="0x111111FF" />
+        <Poster
+            id="avatar"
+            translation="[4,4]"
+            width="144"
+            height="144"
+            loadWidth="144"
+            loadHeight="144"
+            loadDisplayMode="scaleToZoom"
+            failedBitmapUri="pkg:/images/ttns-logo.png" />
         <Label
             id="nameLabel"
-            translation="[16,10]"
-            width="780"
-            height="32"
+            translation="[160,8]"
+            width="640"
+            height="28"
             font="font:SmallBoldSystemFont"
             color="0x00FF00FF" />
-        <Poster id="emoji0" translation="[16,48]" width="48" height="48" loadWidth="48" loadHeight="48" loadDisplayMode="scaleToFit" visible="false" />
-        <Poster id="emoji1" translation="[72,48]" width="48" height="48" loadWidth="48" loadHeight="48" loadDisplayMode="scaleToFit" visible="false" />
-        <Poster id="emoji2" translation="[128,48]" width="48" height="48" loadWidth="48" loadHeight="48" loadDisplayMode="scaleToFit" visible="false" />
-        <Poster id="emoji3" translation="[184,48]" width="48" height="48" loadWidth="48" loadHeight="48" loadDisplayMode="scaleToFit" visible="false" />
         <Label
             id="bodyLabel"
-            translation="[16,104]"
-            width="780"
-            height="80"
+            translation="[160,38]"
+            width="640"
+            height="280"
             font="font:SmallestSystemFont"
             color="0xE8E8E8FF"
-            wrap="true" />
+            wrap="true"
+            horizAlign="left"
+            vertAlign="top"
+            ellipsizeOnBoundary="false"
+            maxLines="10" />
+        <Poster id="emoji0" translation="[160,104]" width="40" height="40" loadWidth="40" loadHeight="40" loadDisplayMode="scaleToFit" visible="false" />
+        <Poster id="emoji1" translation="[208,104]" width="40" height="40" loadWidth="40" loadHeight="40" loadDisplayMode="scaleToFit" visible="false" />
+        <Poster id="emoji2" translation="[256,104]" width="40" height="40" loadWidth="40" loadHeight="40" loadDisplayMode="scaleToFit" visible="false" />
+        <Poster id="emoji3" translation="[304,104]" width="40" height="40" loadWidth="40" loadHeight="40" loadDisplayMode="scaleToFit" visible="false" />
+        <Poster id="emoji4" translation="[352,104]" width="40" height="40" loadWidth="40" loadHeight="40" loadDisplayMode="scaleToFit" visible="false" />
+        <Poster id="emoji5" translation="[400,104]" width="40" height="40" loadWidth="40" loadHeight="40" loadDisplayMode="scaleToFit" visible="false" />
         <Poster
             id="photo"
-            translation="[820,18]"
+            translation="[820,8]"
             width="300"
-            height="160"
+            height="136"
             loadWidth="300"
-            loadHeight="160"
+            loadHeight="136"
             loadDisplayMode="scaleToFit"
             visible="false" />
     </children>

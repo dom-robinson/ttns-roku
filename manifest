@@ -2,7 +2,7 @@ title=TTNS FM
 subtitle=Live radio, local gigs, and community
 major_version=1
 minor_version=0
-build_version=6
+build_version=28
 
 mm_icon_focus_fhd=pkg:/images/channel-poster_fhd.png
 mm_icon_focus_hd=pkg:/images/channel-poster_hd.png

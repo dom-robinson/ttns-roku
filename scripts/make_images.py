@@ -143,7 +143,7 @@ def poster(size: tuple[int, int], dest: Path) -> None:
     """Required Roku sizes, but never stretch the circular mark."""
     im = Image.new("RGB", size, BG)
     w, h = size
-    max_side = int(min(w, h) * 0.88)
+    max_side = int(min(w, h) * 0.92)
     logo = load_logo(max_side)
     x = (w - logo.width) // 2
     y = (h - logo.height) // 2
@@ -177,9 +177,10 @@ def main() -> None:
     splash((1920, 1080), IMAGES / "splash-screen_fhd.jpg")
     splash((1280, 720), IMAGES / "splash-screen_hd.jpg")
     splash((720, 480), IMAGES / "splash-screen_sd.jpg")
+    # Home-row slot is ~4:3. The old 336x210 / 246x140 docs squash a circle.
     poster((540, 405), IMAGES / "channel-poster_fhd.png")
-    poster((336, 210), IMAGES / "channel-poster_hd.png")
-    poster((246, 140), IMAGES / "channel-poster_sd.png")
+    poster((290, 218), IMAGES / "channel-poster_hd.png")
+    poster((214, 144), IMAGES / "channel-poster_sd.png")
     fallback(IMAGES / "artwork-fallback.png")
     spinner(IMAGES / "spinner.png")
     print(f"wrote images in {IMAGES}")

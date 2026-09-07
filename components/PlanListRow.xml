@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="PlanListRow" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="onItemContent" />
+        <field id="focusPercent" type="float" onChange="onFocusPercent" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/source/utils.brs" />
+    <script type="text/brightscript" uri="PlanListRow.brs" />
+    <children>
+        <Rectangle id="border" width="720" height="68" color="0x2A2A2AFF" />
+        <Rectangle id="bg" translation="[3,3]" width="714" height="62" color="0x111111FF" />
+        <Label
+            id="titleLabel"
+            translation="[20,0]"
+            width="680"
+            height="68"
+            font="font:SmallBoldSystemFont"
+            color="0xF6F7F4FF"
+            vertAlign="center" />
+    </children>
+</component>

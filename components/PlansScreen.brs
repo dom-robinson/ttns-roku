@@ -19,19 +19,25 @@ end function
 
 sub populateList()
     root = CreateObject("roSGNode", "ContentNode")
+    i = 0
     for each plan in m.plans
         node = root.createChild("ContentNode")
         node.title = plan.title + "   " + plan.price
+        node.addFields({ planIndex: i })
+        i = i + 1
     end for
     m.list.content = root
     if root.getChildCount() > 0
         m.list.jumpToItem = 0
+        if m.global <> invalid then m.global.planFocusIndex = 0
         showPlan(0)
     end if
 end sub
 
 sub onPlanFocused()
-    showPlan(m.list.itemFocused)
+    idx = m.list.itemFocused
+    if m.global <> invalid then m.global.planFocusIndex = idx
+    showPlan(idx)
 end sub
 
 sub showPlan(idx as Integer)

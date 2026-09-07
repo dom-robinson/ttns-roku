@@ -263,7 +263,7 @@ sub onGigsReady()
         m.list.statusLine = "No gigs in the next few weeks. Check " + city.siteUrl + " on your phone."
     else
         n = items.Count()
-        m.list.statusLine = n.ToStr() + " upcoming  -  When / Venue to filter  -  OK for details"
+        m.list.statusLine = n.ToStr() + " upcoming  -  Rewind / FF filters  -  OK for details"
     end if
 end sub
 
@@ -282,7 +282,7 @@ sub onCommunityReady()
         m.list.statusLine = "Nothing on the board just now. Browse " + city.siteUrl + "/community on your phone."
     else
         n = items.Count()
-        m.list.statusLine = n.ToStr() + " listings  -  Category to filter  -  post on the website"
+        m.list.statusLine = n.ToStr() + " listings  -  Rewind / FF filters  -  post on the website"
     end if
 end sub
 

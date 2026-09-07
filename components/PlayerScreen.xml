@@ -40,35 +40,35 @@
             horizAlign="right" />
 
         <Rectangle id="liveBorder" translation="[80,118]" width="570" height="760" color="0x2A2A2AFF" />
-        <Rectangle translation="[88,126]" width="554" height="744" color="0x111111FF" />
+        <Rectangle translation="[84,122]" width="562" height="752" color="0x111111FF" />
         <Poster
             id="artwork"
-            translation="[88,126]"
-            width="554"
-            height="744"
-            loadWidth="554"
-            loadHeight="744"
+            translation="[84,122]"
+            width="562"
+            height="752"
+            loadWidth="562"
+            loadHeight="752"
             loadDisplayMode="scaleToFit"
             uri="pkg:/images/ttns-logo.png"
             failedBitmapUri="pkg:/images/ttns-logo.png" />
-        <Rectangle translation="[88,760]" width="554" height="110" color="0x000000AA" />
+        <Rectangle translation="[84,756]" width="562" height="118" color="0x000000AA" />
         <Poster
-            translation="[104,776]"
+            translation="[100,772]"
             width="72"
             height="72"
             loadDisplayMode="scaleToFit"
             uri="pkg:/images/ttns-logo.png" />
         <Label
-            translation="[188,780]"
-            width="430"
+            translation="[184,776]"
+            width="438"
             height="36"
             text="TTNS FM LIVE"
             font="font:MediumBoldSystemFont"
             color="0x00FF00FF" />
         <Label
             id="statusLabel"
-            translation="[188,820]"
-            width="430"
+            translation="[184,816]"
+            width="438"
             height="32"
             font="font:SmallSystemFont"
             color="0xF6F7F4FF" />
@@ -86,7 +86,7 @@
             width="1140"
             height="80"
             font="font:LargeBoldSystemFont"
-            color="0xF6F7F4FF"
+            color="0xFF3B3BFF"
             wrap="true" />
         <Label
             id="streamLabel"
@@ -94,7 +94,7 @@
             width="1140"
             height="40"
             font="font:SmallSystemFont"
-            color="0xA8A8A8FF"
+            color="0xFF9A9AFF"
             wrap="true" />
 
         <Label
@@ -105,45 +105,65 @@
             text="ON AIR"
             font="font:SmallBoldSystemFont"
             color="0x00FF00FF" />
-        <Rectangle id="playBorder" translation="[910,276]" width="280" height="72" color="0x00FF00FF" />
-        <Rectangle id="playFill" translation="[916,282]" width="268" height="60" color="0x111111FF" />
+        <Rectangle id="playBorder" translation="[80,892]" width="570" height="112" color="0x00FF00FF" />
+        <Rectangle id="playFill" translation="[83,895]" width="564" height="106" color="0x111111FF" />
         <Label
             id="playLabel"
-            translation="[910,276]"
-            width="280"
-            height="72"
+            translation="[80,892]"
+            width="570"
+            height="112"
             text="PAUSE"
-            font="font:MediumBoldSystemFont"
+            font="font:LargeBoldSystemFont"
             color="0x00FF00FF"
             horizAlign="center"
             vertAlign="center" />
 
         <Label
-            translation="[690,368]"
+            id="chatHint"
+            translation="[690,328]"
             width="1140"
             height="28"
-            text="CHAT  -  chatbot.ttns.uk"
+            text=""
             font="font:SmallestSystemFont"
-            color="0x00FF00FF" />
+            color="0x00FF00FF"
+            horizAlign="right" />
 
-        <MarkupList
-            id="chatList"
-            translation="[690,404]"
-            itemComponentName="ChatRow"
-            itemSize="[1140, 196]"
-            itemSpacing="[0, 8]"
-            numRows="3"
-            drawFocusFeedback="false" />
+        <Group id="chatClip" translation="[690,370]" clippingRect="[0,0,1140,628]">
+            <Group id="chatList" />
+        </Group>
+        <Rectangle id="chatEndBar" translation="[690, 998]" width="1140" height="6" color="0x2A2A2AFF" />
 
         <Label
+            id="helpLabel"
             translation="[80,1020]"
             width="1760"
             height="40"
-            text="OK play / pause  -  Down chat  -  Left / Right station  -  Back"
+            text="OK play / pause  -  Right chat  -  Rewind / FF station  -  Back"
             font="font:SmallestSystemFont"
             color="0x666666FF" />
+
+        <Group id="photoModal" visible="false">
+            <Rectangle width="1920" height="1080" color="0x000000EE" />
+            <Poster
+                id="photoModalImg"
+                translation="[120,40]"
+                width="1680"
+                height="940"
+                loadWidth="1680"
+                loadHeight="940"
+                loadDisplayMode="scaleToFit" />
+            <Label
+                translation="[80,1000]"
+                width="1760"
+                height="40"
+                text="Back closes the picture"
+                font="font:SmallestSystemFont"
+                color="0xA8A8A8FF"
+                horizAlign="center" />
+        </Group>
         <Timer id="feedTimer" repeat="true" duration="8" />
         <Timer id="chatResume" repeat="false" duration="10" />
+        <Timer id="chatSnap" repeat="false" duration="0.2" />
         <Animation id="onAirAnim" duration="1.6" easeFunction="linear" repeat="true" optional="true">
             <ColorFieldInterpolator key="[0.0, 0.5, 1.0]" keyValue="[0x00FF00FF, 0xFF8800FF, 0x00FF00FF]" fieldToInterp="onAir.color" />
         </Animation>

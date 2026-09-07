@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="HomeScreen" extends="Group">
+    <interface>
+        <field id="action" type="string" alwaysNotify="true" />
+        <field id="nowPlayingLine" type="string" />
+        <function name="reloadHome" />
+        <function name="takeFocus" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/source/config.brs" />
+    <script type="text/brightscript" uri="pkg:/source/utils.brs" />
+    <script type="text/brightscript" uri="pkg:/source/registry.brs" />
+    <script type="text/brightscript" uri="pkg:/source/stations.brs" />
+    <script type="text/brightscript" uri="HomeScreen.brs" />
+    <children>
+        <Rectangle width="1920" height="1080" color="0x0A0A0AFF" />
+        <Poster
+            translation="[80,36]"
+            width="96"
+            height="96"
+            loadDisplayMode="scaleToFit"
+            uri="pkg:/images/ttns-logo.png" />
+        <Label id="brand" translation="[196,44]" width="800" height="70" text="TTNS FM" font="font:LargeBoldSystemFont" color="0x00FF00FF" />
+        <Label id="tagline" translation="[196,114]" width="1400" height="36" text="Eccentric, eclectic music and local gig listings" font="font:SmallSystemFont" color="0xA8A8A8FF" />
+        <Label id="nowPlayingLabel" translation="[80,168]" width="1760" height="40" text="" font="font:SmallSystemFont" color="0x00CC00FF" />
+        <Label id="stationHint" translation="[80,220]" width="800" height="32" text="STATION" font="font:SmallestSystemFont" color="0x777777FF" />
+        <Label id="stationLabel" translation="[80,252]" width="1760" height="46" font="font:MediumSystemFont" color="0xF6F7F4FF" />
+
+        <Rectangle id="b0" translation="[80,330]" width="560" height="300" color="0x2A2A2AFF" />
+        <Rectangle id="f0" translation="[86,336]" width="548" height="288" color="0x161616FF" />
+        <Poster translation="[112,360]" width="88" height="88" loadDisplayMode="scaleToFit" uri="pkg:/images/ttns-logo.png" />
+        <Label id="t0" translation="[216,372]" width="380" height="70" text="Listen live" font="font:LargeBoldSystemFont" color="0xF6F7F4FF" wrap="true" />
+        <Label id="s0" translation="[112,470]" width="496" height="90" text="TTNS FM with live idents, chat, and now playing" font="font:SmallestSystemFont" color="0xA0A0A0FF" wrap="true" />
+
+        <Rectangle id="b1" translation="[680,330]" width="560" height="300" color="0x2A2A2AFF" />
+        <Rectangle id="f1" translation="[686,336]" width="548" height="288" color="0x161616FF" />
+        <Label id="t1" translation="[712,420]" width="496" height="70" text="Gigs" font="font:LargeBoldSystemFont" color="0xF6F7F4FF" wrap="true" />
+        <Label id="s1" translation="[712,500]" width="496" height="80" text="Posters, venues, and this week's listings" font="font:SmallestSystemFont" color="0xA0A0A0FF" wrap="true" />
+
+        <Rectangle id="b2" translation="[1280,330]" width="560" height="300" color="0x2A2A2AFF" />
+        <Rectangle id="f2" translation="[1286,336]" width="548" height="288" color="0x161616FF" />
+        <Label id="t2" translation="[1312,420]" width="496" height="70" text="Community" font="font:LargeBoldSystemFont" color="0xF6F7F4FF" wrap="true" />
+        <Label id="s2" translation="[1312,500]" width="496" height="80" text="Acts, kit, and local notices" font="font:SmallestSystemFont" color="0xA0A0A0FF" wrap="true" />
+
+        <Rectangle id="b3" translation="[80,670]" width="860" height="240" color="0x2A2A2AFF" />
+        <Rectangle id="f3" translation="[86,676]" width="848" height="228" color="0x161616FF" />
+        <Label id="t3" translation="[112,720]" width="796" height="70" text="Promote on TTNS" font="font:LargeBoldSystemFont" color="0xF6F7F4FF" wrap="true" />
+        <Label id="s3" translation="[112,800]" width="796" height="70" text="On-air plans, community prices, and how to sign up" font="font:SmallestSystemFont" color="0xA0A0A0FF" wrap="true" />
+
+        <Rectangle id="b4" translation="[980,670]" width="860" height="240" color="0x2A2A2AFF" />
+        <Rectangle id="f4" translation="[986,676]" width="848" height="228" color="0x161616FF" />
+        <Label id="t4" translation="[1012,720]" width="796" height="70" text="On the web" font="font:LargeBoldSystemFont" color="0xF6F7F4FF" wrap="true" />
+        <Label id="s4" translation="[1012,800]" width="796" height="70" text="Tickets, posts, and accounts on your phone" font="font:SmallestSystemFont" color="0xA0A0A0FF" wrap="true" />
+
+        <Label id="footer" translation="[80,980]" width="1760" height="40" text="Left / Right / Up / Down to move  -  OK to open  -  Back to exit" font="font:SmallestSystemFont" color="0x666666FF" />
+    </children>
+</component>

@@ -1,0 +1,21 @@
+title=TTNS FM
+subtitle=Live radio, local gigs, and community
+major_version=1
+minor_version=0
+build_version=6
+
+mm_icon_focus_fhd=pkg:/images/channel-poster_fhd.png
+mm_icon_focus_hd=pkg:/images/channel-poster_hd.png
+mm_icon_focus_sd=pkg:/images/channel-poster_sd.png
+
+splash_screen_fhd=pkg:/images/splash-screen_fhd.jpg
+splash_screen_hd=pkg:/images/splash-screen_hd.jpg
+splash_screen_sd=pkg:/images/splash-screen_sd.jpg
+splash_color=#0a0a0a
+splash_min_time=800
+
+ui_resolutions=fhd
+supports_input_launch=1
+confirm_partner_button=1
+rsg_version=1.2
+bs_const=DEBUG=false

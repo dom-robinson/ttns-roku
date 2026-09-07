@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="CommunityTask" extends="Task">
+    <interface>
+        <field id="apiBaseUrl" type="string" />
+        <field id="items" type="array" />
+        <field id="error" type="string" />
+        <field id="ready" type="boolean" alwaysNotify="true" value="false" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/source/config.brs" />
+    <script type="text/brightscript" uri="pkg:/source/utils.brs" />
+    <script type="text/brightscript" uri="CommunityTask.brs" />
+</component>

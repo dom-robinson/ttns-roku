@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="PlanCard" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="onItemContent" />
+        <field id="focusPercent" type="float" onChange="onFocusPercent" />
+    </interface>
+    <script type="text/brightscript" uri="PlanCard.brs" />
+    <children>
+        <Rectangle id="border" width="860" height="210" color="0x2A2A2AFF" />
+        <Rectangle id="bg" translation="[4,4]" width="852" height="202" color="0x141414FF" />
+        <Label
+            id="groupLabel"
+            translation="[24,16]"
+            width="800"
+            height="28"
+            font="font:SmallestSystemFont"
+            color="0x00FF00FF" />
+        <Label
+            id="titleLabel"
+            translation="[24,48]"
+            width="520"
+            height="50"
+            font="font:MediumBoldSystemFont"
+            color="0xF6F7F4FF" />
+        <Label
+            id="priceLabel"
+            translation="[540,48]"
+            width="290"
+            height="50"
+            font="font:MediumBoldSystemFont"
+            color="0x00FF00FF"
+            horizAlign="right" />
+        <Label
+            id="blurbLabel"
+            translation="[24,108]"
+            width="812"
+            height="80"
+            font="font:SmallSystemFont"
+            color="0xC8C8C8FF"
+            wrap="true" />
+    </children>
+</component>

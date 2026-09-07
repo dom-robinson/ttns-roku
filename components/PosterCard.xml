@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="PosterCard" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="onItemContent" />
+        <field id="focusPercent" type="float" onChange="onFocusPercent" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/source/config.brs" />
+    <script type="text/brightscript" uri="pkg:/source/utils.brs" />
+    <script type="text/brightscript" uri="PosterCard.brs" />
+    <children>
+        <Rectangle id="border" width="320" height="380" color="0x2A2A2AFF" />
+        <Rectangle id="bg" translation="[4,4]" width="312" height="372" color="0x141414FF" />
+        <Poster
+            id="thumb"
+            translation="[4,4]"
+            width="312"
+            height="230"
+            loadWidth="312"
+            loadHeight="230"
+            loadDisplayMode="scaleToZoom"
+            failedBitmapUri="pkg:/images/ttns-logo.png" />
+        <MarqueeLabel
+            id="titleMarquee"
+            translation="[16,240]"
+            clipW="288"
+            clipH="36"
+            fontSize="26"
+            bold="true"
+            labelColor="0xF6F7F4FF" />
+        <Label
+            id="dateLabel"
+            translation="[16,278]"
+            width="288"
+            height="28"
+            font="font:SmallestSystemFont"
+            color="0x00CC00FF" />
+        <MarqueeLabel
+            id="metaMarquee"
+            translation="[16,308]"
+            clipW="288"
+            clipH="56"
+            fontSize="22"
+            bold="false"
+            labelColor="0xA8A8A8FF" />
+    </children>
+</component>

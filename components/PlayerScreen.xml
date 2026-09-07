@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="PlayerScreen" extends="Group">
+    <interface>
+        <field id="action" type="string" alwaysNotify="true" />
+        <field id="artworkUrl" type="string" onChange="onArtworkUrl" />
+        <field id="trackTitle" type="string" alias="trackLabel.text" />
+        <field id="stationLine" type="string" alias="stationLabel.text" />
+        <field id="statusLine" type="string" alias="statusLabel.text" />
+        <field id="streamLine" type="string" alias="streamLabel.text" />
+        <field id="isPlaying" type="boolean" onChange="onPlaying" />
+        <function name="takeFocus" />
+        <function name="startLiveFeeds" />
+        <function name="stopLiveFeeds" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/source/config.brs" />
+    <script type="text/brightscript" uri="pkg:/source/utils.brs" />
+    <script type="text/brightscript" uri="PlayerScreen.brs" />
+    <children>
+        <Rectangle width="1920" height="1080" color="0x0A0A0AFF" />
+        <Poster
+            translation="[80,28]"
+            width="72"
+            height="72"
+            loadDisplayMode="scaleToFit"
+            uri="pkg:/images/ttns-logo.png" />
+        <Label
+            translation="[168,36]"
+            width="700"
+            height="56"
+            text="LISTEN LIVE"
+            font="font:LargeBoldSystemFont"
+            color="0x00FF00FF" />
+        <Label
+            id="stationLabel"
+            translation="[880,44]"
+            width="960"
+            height="48"
+            font="font:MediumSystemFont"
+            color="0xA8A8A8FF"
+            horizAlign="right" />
+
+        <Rectangle id="liveBorder" translation="[80,118]" width="570" height="760" color="0x2A2A2AFF" />
+        <Rectangle translation="[88,126]" width="554" height="744" color="0x111111FF" />
+        <Poster
+            id="artwork"
+            translation="[88,126]"
+            width="554"
+            height="744"
+            loadWidth="554"
+            loadHeight="744"
+            loadDisplayMode="scaleToFit"
+            uri="pkg:/images/ttns-logo.png"
+            failedBitmapUri="pkg:/images/ttns-logo.png" />
+        <Rectangle translation="[88,760]" width="554" height="110" color="0x000000AA" />
+        <Poster
+            translation="[104,776]"
+            width="72"
+            height="72"
+            loadDisplayMode="scaleToFit"
+            uri="pkg:/images/ttns-logo.png" />
+        <Label
+            translation="[188,780]"
+            width="430"
+            height="36"
+            text="TTNS FM LIVE"
+            font="font:MediumBoldSystemFont"
+            color="0x00FF00FF" />
+        <Label
+            id="statusLabel"
+            translation="[188,820]"
+            width="430"
+            height="32"
+            font="font:SmallSystemFont"
+            color="0xF6F7F4FF" />
+
+        <Label
+            translation="[690,118]"
+            width="1140"
+            height="28"
+            text="NOW PLAYING"
+            font="font:SmallestSystemFont"
+            color="0x00FF00FF" />
+        <Label
+            id="trackLabel"
+            translation="[690,152]"
+            width="1140"
+            height="80"
+            font="font:LargeBoldSystemFont"
+            color="0xF6F7F4FF"
+            wrap="true" />
+        <Label
+            id="streamLabel"
+            translation="[690,236]"
+            width="1140"
+            height="40"
+            font="font:SmallSystemFont"
+            color="0xA8A8A8FF"
+            wrap="true" />
+
+        <Label
+            id="onAir"
+            translation="[690,286]"
+            width="200"
+            height="40"
+            text="ON AIR"
+            font="font:SmallBoldSystemFont"
+            color="0x00FF00FF" />
+        <Rectangle id="playBorder" translation="[910,276]" width="280" height="72" color="0x00FF00FF" />
+        <Rectangle id="playFill" translation="[916,282]" width="268" height="60" color="0x111111FF" />
+        <Label
+            id="playLabel"
+            translation="[910,276]"
+            width="280"
+            height="72"
+            text="PAUSE"
+            font="font:MediumBoldSystemFont"
+            color="0x00FF00FF"
+            horizAlign="center"
+            vertAlign="center" />
+
+        <Label
+            translation="[690,368]"
+            width="1140"
+            height="28"
+            text="CHAT  -  chatbot.ttns.uk"
+            font="font:SmallestSystemFont"
+            color="0x00FF00FF" />
+
+        <MarkupList
+            id="chatList"
+            translation="[690,404]"
+            itemComponentName="ChatRow"
+            itemSize="[1140, 196]"
+            itemSpacing="[0, 8]"
+            numRows="3"
+            drawFocusFeedback="false" />
+
+        <Label
+            translation="[80,1020]"
+            width="1760"
+            height="40"
+            text="OK play / pause  -  Down chat  -  Left / Right station  -  Back"
+            font="font:SmallestSystemFont"
+            color="0x666666FF" />
+        <Timer id="feedTimer" repeat="true" duration="8" />
+        <Timer id="chatResume" repeat="false" duration="10" />
+        <Animation id="onAirAnim" duration="1.6" easeFunction="linear" repeat="true" optional="true">
+            <ColorFieldInterpolator key="[0.0, 0.5, 1.0]" keyValue="[0x00FF00FF, 0xFF8800FF, 0x00FF00FF]" fieldToInterp="onAir.color" />
+        </Animation>
+    </children>
+</component>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="WebHintDialog" extends="Group">
+    <interface>
+        <field id="titleText" type="string" alias="titleLabel.text" />
+        <field id="bodyText" type="string" alias="bodyLabel.text" />
+        <field id="urlText" type="string" alias="urlLabel.text" />
+        <function name="present" />
+        <function name="hideHint" />
+    </interface>
+    <script type="text/brightscript" uri="WebHintDialog.brs" />
+    <children>
+        <Rectangle id="dim" width="1920" height="1080" color="0x000000CC" />
+        <Rectangle id="card" translation="[360,250]" width="1200" height="580" color="0x111111FF" />
+        <Rectangle translation="[360,250]" width="1200" height="8" color="0x00FF00FF" />
+        <Label
+            id="titleLabel"
+            translation="[420,300]"
+            width="1080"
+            height="70"
+            font="font:LargeBoldSystemFont"
+            color="0x00FF00FF" />
+        <Label
+            id="bodyLabel"
+            translation="[420,390]"
+            width="1080"
+            height="180"
+            font="font:MediumSystemFont"
+            color="0xF6F7F4FF"
+            wrap="true" />
+        <Label
+            id="urlLabel"
+            translation="[420,590]"
+            width="1080"
+            height="70"
+            font="font:MediumBoldSystemFont"
+            color="0x00FF00FF"
+            horizAlign="center" />
+        <Label
+            translation="[420,700]"
+            width="1080"
+            height="50"
+            text="OK  -  Back"
+            font="font:SmallSystemFont"
+            color="0xA0A0A0FF"
+            horizAlign="center" />
+    </children>
+</component>

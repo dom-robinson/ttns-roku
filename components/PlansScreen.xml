@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="PlansScreen" extends="Group">
+    <interface>
+        <field id="action" type="string" alwaysNotify="true" />
+        <function name="takeFocus" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/source/config.brs" />
+    <script type="text/brightscript" uri="pkg:/source/plans.brs" />
+    <script type="text/brightscript" uri="pkg:/source/utils.brs" />
+    <script type="text/brightscript" uri="pkg:/source/registry.brs" />
+    <script type="text/brightscript" uri="pkg:/source/stations.brs" />
+    <script type="text/brightscript" uri="PlansScreen.brs" />
+    <children>
+        <Rectangle width="1920" height="1080" color="0x0A0A0AFF" />
+        <Poster
+            translation="[80,28]"
+            width="72"
+            height="72"
+            loadDisplayMode="scaleToFit"
+            uri="pkg:/images/ttns-logo.png" />
+        <Label
+            translation="[168,36]"
+            width="1600"
+            height="56"
+            text="Promote on TTNS"
+            font="font:LargeBoldSystemFont"
+            color="0x00FF00FF" />
+        <Label
+            translation="[80,108]"
+            width="1760"
+            height="36"
+            text="Move through the list. The card on the right is the full product. Sign-up stays on the city website."
+            font="font:SmallSystemFont"
+            color="0xA8A8A8FF" />
+
+        <LabelList
+            id="list"
+            translation="[80,160]"
+            itemSize="[720,68]"
+            numRows="11"
+            color="0xF6F7F4FF"
+            focusedColor="0x00FF00FF" />
+
+        <Rectangle translation="[840,160]" width="1000" height="820" color="0x141414FF" />
+        <Rectangle translation="[840,160]" width="8" height="820" color="0x00FF00FF" />
+        <Label
+            id="dlgGroup"
+            translation="[872,180]"
+            width="940"
+            height="36"
+            font="font:SmallBoldSystemFont"
+            color="0x00FF00FF" />
+        <Label
+            id="dlgTitle"
+            translation="[872,220]"
+            width="600"
+            height="70"
+            font="font:LargeBoldSystemFont"
+            color="0xF6F7F4FF" />
+        <Label
+            id="dlgPrice"
+            translation="[1470,220]"
+            width="340"
+            height="70"
+            font="font:MediumBoldSystemFont"
+            color="0x00FF00FF"
+            horizAlign="right" />
+        <Label
+            id="dlgBody"
+            translation="[872,310]"
+            width="940"
+            height="520"
+            font="font:MediumSystemFont"
+            color="0xE8E8E8FF"
+            wrap="true" />
+        <Label
+            id="dlgUrl"
+            translation="[872,850]"
+            width="940"
+            height="90"
+            font="font:SmallBoldSystemFont"
+            color="0x00FF00FF"
+            wrap="true" />
+
+        <Label
+            translation="[80,1020]"
+            width="1760"
+            height="40"
+            text="Up / Down through products  -  Back home"
+            font="font:SmallestSystemFont"
+            color="0x666666FF" />
+    </children>
+</component>

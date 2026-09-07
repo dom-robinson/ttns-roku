@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="AboutScreen" extends="Group">
+    <interface>
+        <field id="action" type="string" alwaysNotify="true" />
+        <function name="takeFocus" />
+    </interface>
+    <script type="text/brightscript" uri="AboutScreen.brs" />
+    <children>
+        <Rectangle width="1920" height="1080" color="0x0A0A0AFF" />
+        <Poster
+            translation="[80,36]"
+            width="88"
+            height="88"
+            loadDisplayMode="scaleToFit"
+            uri="pkg:/images/ttns-logo.png" />
+        <Label
+            translation="[188,48]"
+            width="1640"
+            height="70"
+            text="On your phone or laptop"
+            font="font:LargeBoldSystemFont"
+            color="0x00FF00FF" />
+        <Label
+            translation="[80,160]"
+            width="1760"
+            height="160"
+            text="This Roku app is for listening and browsing. Tickets, community posts, sign-up, and venue ads are on the TTNS websites - they need a keyboard and a login, which is a poor fit for the TV remote."
+            font="font:MediumSystemFont"
+            color="0xF6F7F4FF"
+            wrap="true" />
+        <Label
+            translation="[80,360]"
+            width="1760"
+            height="60"
+            text="www.ttns.fm"
+            font="font:LargeBoldSystemFont"
+            color="0x00FF00FF" />
+        <Label
+            translation="[80,440]"
+            width="1760"
+            height="50"
+            text="Pick your city, then continue there."
+            font="font:MediumSystemFont"
+            color="0xA8A8A8FF" />
+        <Label
+            translation="[80,540]"
+            width="1760"
+            height="50"
+            text="brighton.ttns.fm"
+            font="font:MediumBoldSystemFont"
+            color="0xF6F7F4FF" />
+        <Label
+            translation="[80,600]"
+            width="1760"
+            height="50"
+            text="bristol.ttns.fm"
+            font="font:MediumBoldSystemFont"
+            color="0xF6F7F4FF" />
+        <Label
+            translation="[80,720]"
+            width="1760"
+            height="80"
+            text="Gigs, community boards, and advertiser tools all live on those city sites."
+            font="font:SmallSystemFont"
+            color="0xA8A8A8FF"
+            wrap="true" />
+        <Label
+            translation="[80,980]"
+            width="1760"
+            height="40"
+            text="Back home"
+            font="font:SmallestSystemFont"
+            color="0x666666FF" />
+    </children>
+</component>

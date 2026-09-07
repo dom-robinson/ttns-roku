@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="ChatRow" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="onItemContent" />
+        <field id="focusPercent" type="float" onChange="onFocusPercent" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/source/utils.brs" />
+    <script type="text/brightscript" uri="ChatRow.brs" />
+    <children>
+        <Rectangle id="bg" width="1140" height="196" color="0x111111FF" />
+        <Label
+            id="nameLabel"
+            translation="[16,10]"
+            width="780"
+            height="32"
+            font="font:SmallBoldSystemFont"
+            color="0x00FF00FF" />
+        <Poster id="emoji0" translation="[16,48]" width="48" height="48" loadWidth="48" loadHeight="48" loadDisplayMode="scaleToFit" visible="false" />
+        <Poster id="emoji1" translation="[72,48]" width="48" height="48" loadWidth="48" loadHeight="48" loadDisplayMode="scaleToFit" visible="false" />
+        <Poster id="emoji2" translation="[128,48]" width="48" height="48" loadWidth="48" loadHeight="48" loadDisplayMode="scaleToFit" visible="false" />
+        <Poster id="emoji3" translation="[184,48]" width="48" height="48" loadWidth="48" loadHeight="48" loadDisplayMode="scaleToFit" visible="false" />
+        <Label
+            id="bodyLabel"
+            translation="[16,104]"
+            width="780"
+            height="80"
+            font="font:SmallestSystemFont"
+            color="0xE8E8E8FF"
+            wrap="true" />
+        <Poster
+            id="photo"
+            translation="[820,18]"
+            width="300"
+            height="160"
+            loadWidth="300"
+            loadHeight="160"
+            loadDisplayMode="scaleToFit"
+            visible="false" />
+    </children>
+</component>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="MarqueeLabel" extends="Group">
+    <interface>
+        <field id="text" type="string" onChange="onText" />
+        <field id="active" type="boolean" onChange="onActive" />
+        <field id="labelColor" type="string" onChange="onColor" value="0xF6F7F4FF" />
+        <field id="clipW" type="float" value="288" />
+        <field id="clipH" type="float" value="36" />
+        <field id="fontSize" type="integer" value="26" />
+        <field id="bold" type="boolean" value="true" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/source/utils.brs" />
+    <script type="text/brightscript" uri="MarqueeLabel.brs" />
+    <children>
+        <Label id="lab" wrap="false" color="0xF6F7F4FF" />
+        <Animation id="anim" duration="5" easeFunction="linear" repeat="true" optional="true">
+            <Vector2DFieldInterpolator
+                id="interp"
+                key="[0.0, 1.0]"
+                keyValue="[[0,0], [-120,0]]"
+                fieldToInterp="lab.translation" />
+        </Animation>
+    </children>
+</component>

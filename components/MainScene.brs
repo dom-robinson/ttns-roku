@@ -124,7 +124,8 @@ sub onHomeAction()
     else if action = "gigs"
         openList("gigs")
     else if action = "community"
-        openList("community")
+        ' Community board parked (Nov 2026) — keep deep-link id but land on Home.
+        showHome()
     else if action = "station"
         if m.wantPlay = true
             applyStationToPlayer(true)

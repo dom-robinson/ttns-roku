@@ -38,18 +38,18 @@
 
         <Rectangle id="b2" translation="[1280,330]" width="560" height="300" color="0x2A2A2AFF" />
         <Rectangle id="f2" translation="[1286,336]" width="548" height="288" color="0x161616FF" />
-        <Label id="t2" translation="[1312,420]" width="496" height="70" text="Community" font="font:LargeBoldSystemFont" color="0xF6F7F4FF" wrap="true" />
-        <Label id="s2" translation="[1312,500]" width="496" height="80" text="Acts, kit, and local notices" font="font:SmallestSystemFont" color="0xA0A0A0FF" wrap="true" />
+        <Label id="t2" translation="[1312,420]" width="496" height="70" text="About" font="font:LargeBoldSystemFont" color="0xF6F7F4FF" wrap="true" />
+        <Label id="s2" translation="[1312,500]" width="496" height="80" text="City sites, streams, and how TTNS works" font="font:SmallestSystemFont" color="0xA0A0A0FF" wrap="true" />
 
         <Rectangle id="b3" translation="[80,670]" width="860" height="240" color="0x2A2A2AFF" />
         <Rectangle id="f3" translation="[86,676]" width="848" height="228" color="0x161616FF" />
-        <Label id="t3" translation="[112,720]" width="796" height="70" text="Promote on TTNS" font="font:LargeBoldSystemFont" color="0xF6F7F4FF" wrap="true" />
-        <Label id="s3" translation="[112,800]" width="796" height="70" text="On-air plans, community prices, and how to sign up" font="font:SmallestSystemFont" color="0xA0A0A0FF" wrap="true" />
+        <Label id="t3" translation="[112,720]" width="796" height="70" text="Free listings" font="font:LargeBoldSystemFont" color="0xF6F7F4FF" wrap="true" />
+        <Label id="s3" translation="[112,800]" width="796" height="70" text="Local gigs are free to air — listen and find tickets" font="font:SmallestSystemFont" color="0xA0A0A0FF" wrap="true" />
 
         <Rectangle id="b4" translation="[980,670]" width="860" height="240" color="0x2A2A2AFF" />
         <Rectangle id="f4" translation="[986,676]" width="848" height="228" color="0x161616FF" />
         <Label id="t4" translation="[1012,720]" width="796" height="70" text="On the web" font="font:LargeBoldSystemFont" color="0xF6F7F4FF" wrap="true" />
-        <Label id="s4" translation="[1012,800]" width="796" height="70" text="Tickets, posts, and accounts on your phone" font="font:SmallestSystemFont" color="0xA0A0A0FF" wrap="true" />
+        <Label id="s4" translation="[1012,800]" width="796" height="70" text="Tickets and city sites on your phone" font="font:SmallestSystemFont" color="0xA0A0A0FF" wrap="true" />
 
         <Label id="footer" translation="[80,980]" width="1760" height="40" text="Left / Right / Up / Down to move  -  OK to open  -  Back to exit" font="font:SmallestSystemFont" color="0x666666FF" />
     </children>

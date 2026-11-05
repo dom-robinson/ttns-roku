@@ -132,7 +132,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
         else if m.index = 1
             m.top.action = "gigs"
         else if m.index = 2
-            m.top.action = "community"
+            m.top.action = "web"
         else if m.index = 3
             m.top.action = "plans"
         else

@@ -23,7 +23,8 @@ function DeepLinkAction(contentId as String, mediaType as String) as String
     id = NormalizeContentId(contentId)
     if id = "" then return "home"
     if id = "gigs" or id = "events" or id = "schedule" then return "gigs"
-    if id = "community" or id = "listings" or id = "board" then return "community"
+    ' Community board parked (Nov 2026) — deep links land on Home.
+    if id = "community" or id = "listings" or id = "board" then return "home"
     if id = "promote" or id = "plans" or id = "prices" then return "promote"
     stationId = StationIdForDeepLink(id)
     if stationId = "" then return "home"

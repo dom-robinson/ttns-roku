@@ -1,8 +1,8 @@
 # TTNS FM for Roku
 
-Sideloadable [Roku](https://www.roku.com) channel for the public parts of [ttns.fm](https://www.ttns.fm): **live radio**, **gig listings**, and the **community board**.
+Sideloadable [Roku](https://www.roku.com) channel for the public parts of [ttns.fm](https://www.ttns.fm): **live online radio** and **free city gig listings**.
 
-Tickets, replies, posting, and plan sign-up stay on the websites. The TV app tells people to open `www.ttns.fm`, `brighton.ttns.fm`, or `bristol.ttns.fm` on a phone or laptop.
+Ticket links open on the city websites. The TV app points people to `www.ttns.fm`, `brighton.ttns.fm`, or `bristol.ttns.fm` on a phone or laptop.
 
 This channel does **not** need API keys, Discord tokens, or Channel Store secrets in the repo. Everything it reads is already public.
 
@@ -13,12 +13,11 @@ This channel does **not** need API keys, Discord tokens, or Channel Store secret
 | Screen | Source | TV behaviour |
 |---|---|---|
 | Listen live | Brighton SharpStream + national Icecast MP3 | Play / pause, Rewind / FF station, live canvas ident, now playing, custom chat list |
-| Gigs | `{city}/api/schedule?date=&public=true` (14 days, sequential) | Poster grid. Rewind / FF opens When / Venue / Promote filters. OK opens details |
-| Community | `{city}/api/community/listings` and `/acts` | Poster grid. Rewind / FF opens Category / Promote. Reply / post / sign-up → website hint |
-| Promote | Public prices from the city `/plans` page | Thin orange selector + product card. Sign-up stays on the website |
-| On the web | — | Shows `www.ttns.fm` and the city hosts |
+| Gigs | `{city}/api/schedule?date=&public=true` (14 days, sequential) | Poster grid. Rewind / FF opens When / Venue filters. OK opens details |
+| Free listings | City `/plans` free-listings copy | Explains free-to-air local gigs (venue paid products parked) |
+| On the web / About | — | Shows `www.ttns.fm` and the city hosts |
 
-Station choice is remembered on the device. Default is **Brighton** (live DAB + listings). Bristol is listed and marked as still launching. National is The Thursday Night Show stream; its gigs/community views fall back to Brighton.
+Station choice is remembered on the device. Default is **Brighton** (online stream + listings). Bristol is listed and marked as still launching. National is The Thursday Night Show stream; its gigs view falls back to Brighton. Community board UI is parked (Nov 2026).
 
 Emails and ticket checkout URLs from the APIs are **not** shown on screen.
 

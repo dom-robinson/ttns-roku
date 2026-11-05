@@ -24,7 +24,7 @@
             translation="[80,160]"
             width="1760"
             height="160"
-            text="This Roku app is for listening and browsing. Tickets, community posts, sign-up, and venue ads are on the TTNS websites - they need a keyboard and a login, which is a poor fit for the TV remote."
+            text="This Roku app is for listening and browsing local gig listings. Ticket links open on the TTNS city websites - they need a keyboard, which is a poor fit for the TV remote."
             font="font:MediumSystemFont"
             color="0xF6F7F4FF"
             wrap="true" />
@@ -60,7 +60,7 @@
             translation="[80,720]"
             width="1760"
             height="80"
-            text="Gigs, community boards, and advertiser tools all live on those city sites."
+            text="Free city gig listings and ticket links live on those sites. Listen online anytime."
             font="font:SmallSystemFont"
             color="0xA8A8A8FF"
             wrap="true" />
